@@ -1,0 +1,133 @@
+version: 1.0
+provider:
+        name: openfaas
+        gateway: http://127.0.0.1:8080
+functions:
+        full-wage-full:
+                lang: pydatascience
+                handler: ../benchmarks/full/batch-wage-pay/full-wage-full
+                image: arearnest7/full-wage-full:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-full
+        original-wage-avg:
+                lang: pydatascience
+                handler: ../benchmarks/original/batch-wage-pay/original-wage-avg
+                image: arearnest7/original-wage-avg:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-wage-format:
+                lang: pydatascience
+                handler: ../benchmarks/original/batch-wage-pay/original-wage-format
+                image: arearnest7/original-wage-format:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-wage-merit:
+                lang: pydatascience
+                handler: ../benchmarks/original/batch-wage-pay/original-wage-merit
+                image: arearnest7/original-wage-merit:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-wage-stats:
+                lang: pydatascience
+                handler: ../benchmarks/original/batch-wage-pay/original-wage-stats
+                image: arearnest7/original-wage-stats:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-original
+        original-wage-sum:
+                lang: pydatascience
+                handler: ../benchmarks/partial/batch-wage-pay/original-wage-sum
+                image: arearnest7/original-wage-sum:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-wage-validator:
+                lang: pydatascience
+                handler: ../benchmarks/partial/batch-wage-pay/original-wage-validator
+                image: arearnest7/original-wage-validator:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-wage-write-merit:
+                lang: pydatascience
+                handler: ../benchmarks/partial/batch-wage-pay/original-wage-write-merit
+                image: arearnest7/original-wage-write-merit:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-original
+        original-wage-write-raw:
+                lang: pydatascience
+                handler: ../benchmarks/partial/batch-wage-pay/original-wage-write-raw
+                image: arearnest7/original-wage-write-raw:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-original
+        partial-wage-stats:
+                lang: pydatascience
+                handler: ../benchmarks/full/batch-wage-pay/partial-wage-stats
+                image: arearnest7/partial-wage-stats:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-partial
+        partial-wage-sum-avg-merit-write:
+                lang: pydatascience
+                handler: ../benchmarks/full/batch-wage-pay/partial-wage-sum-avg-merit-write
+                image: arearnest7/partial-wage-sum-avg-merit-write:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-partial
+        partial-wage-validator-format-write:
+                lang: pydatascience
+                handler: ../benchmarks/full/batch-wage-pay/partial-wage-validator-format-write
+                image: arearnest7/partial-wage-validator-format-write:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-partial
+configuration:
+        templates:
+                - name: pydatascience
+                  source: https://github.com/LucasRoesler/pydatascience-template

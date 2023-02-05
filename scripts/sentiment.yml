@@ -1,0 +1,179 @@
+version: 1.0
+provider:
+        name: openfaas
+        gateway: http://127.0.0.1:8080
+functions:
+        full-sentiment-full:
+                lang: pydatascience
+                handler: ../benchmarks/full/sentiment-analysis/full-sentiment-full
+                image: arearnest7/full-sentiment-full:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-full
+                        - aws-sns
+                        - aws-products-db
+                        - aws-services-db
+        original-sentiment-cfail:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-cfail
+                image: arearnest7/original-sentiment-cfail:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-sentiment-db:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-db
+                image: arearnest7/original-sentiment-db:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-products-db
+                        - aws-services-db
+        original-sentiment-main:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-main
+                image: arearnest7/original-sentiment-main:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-sentiment-product-or-service:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-or-service
+                image: arearnest7/original-sentiment-product-or-service:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-sentiment-product-result:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-result
+                image: arearnest7/original-sentiment-product-result:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-sentiment-product-sentiment:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-sentiment
+                image: arearnest7/original-sentiment-product-sentiment:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+        original-sentiment-read-csv:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-read-csv
+                image: arearnest7/original-sentiment-read-csv:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-original
+        original-sentiment-service-result:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-service-result
+                image: arearnest7/original-sentiment-service-result:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-sentiment-service-sentiment:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-service-sentiment
+                image: arearnest7/original-sentiment-service-sentiment:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+        original-sentiment-sfail:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-sfail
+                image: arearnest7/original-sentiment-sfail:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+        original-sentiment-sns:
+                lang: pydatascience
+                handler: ../benchmarks/original/sentiment-analysis/original-sentiment-sns
+                image: arearnest7/original-sentiment-sns:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-sns
+        partial-sentiment-product-path:
+                lang: pydatascience
+                handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-product-path
+                image: arearnest7/partial-sentiment-product-path:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+        partial-sentiment-read-pos-cfail:
+                lang: pydatascience
+                handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-read-pos-cfail
+                image: arearnest7/partial-sentiment-read-pos-cfail:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-s3-partial
+        partial-sentiment-service-path:
+                lang: pydatascience
+                handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-service-path
+                image: arearnest7/partial-sentiment-service-path:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+        partial-sentiment-sns-db:
+                lang: pydatascience
+                handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-sns-db
+                image: arearnest7/partial-sentiment-sns-db:latest
+                labels:
+                        com.openfaas.scale.max: 2000
+                        com.openfaas.scale.min: 2000
+                        com.openfaas.scale.target: 50
+                secrets:
+                        - aws-access-key
+                        - aws-secret-access-key
+                        - aws-sns
+                        - aws-products-db
+                        - aws-services-db
+configuration:
+        templates:
+                - name: pydatascience
+                  source: https://github.com/LucasRoesler/pydatascience-template
