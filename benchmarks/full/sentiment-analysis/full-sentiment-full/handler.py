@@ -99,7 +99,7 @@ def service_result_handler(req):
     Args:
         req (str): request body
     """
-
+    
     event = req
     results = ""
     if event["sentiment"] == "POSITIVE" or event["sentiment"] == "NEUTRAL":
@@ -116,7 +116,7 @@ def product_result_handler(req):
     Args:
         req (str): request body
     """
-
+    
     event = req
     results = ""
     if event["sentiment"] == "POSITIVE" or event["sentiment"] == "NEUTRAL":
@@ -162,7 +162,6 @@ def service_sentiment_handler(req):
     '''
     perform sentiment analysis on the input feedback
     '''
-    
     #use comprehend to perform sentiment analysis
     feedback = event['feedback']
     sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
@@ -184,7 +183,6 @@ def product_or_service_handler(req):
     """
 
     event = req
-
     results = ""
     if event["reviewType"] == "Product":
         results = product_sentiment_handler(event)
@@ -236,18 +234,15 @@ def handle(req):
 
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     file_key = event['Records'][0]['s3']['object']['key']
-
     
     input= {
             'bucket_name': bucket_name,
             'file_key': file_key
         }
-        
     #stepFunction = boto3.client('stepfunctions')
     #response = stepFunction.start_execution(
     #    stateMachineArn='arn:aws:states:XXXXXXXXXXXXXXXX:stateMachine:my-state-machine',
     #    input = json.dumps(input, indent=4)
     #)
     response = read_csv_handler(input)
-    
-    return pp.pprint(response)
+    return response

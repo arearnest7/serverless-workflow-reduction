@@ -14,7 +14,7 @@ with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
     AWS_SecretAccessKey=f.read()
 
 pp = pprint.PrettyPrinter(indent=4)
-s3 = bot3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
 client = boto3.client('comprehend', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
 
 def handle(req):

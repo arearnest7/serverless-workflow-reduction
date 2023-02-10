@@ -37,4 +37,4 @@ def handle(req):
     #)
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-sentiment-read-csv', data = json.dumps(input))
     
-    return pp.pprint(response.text)
+    return response.text

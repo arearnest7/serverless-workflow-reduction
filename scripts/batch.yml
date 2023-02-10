@@ -4,7 +4,7 @@ provider:
         gateway: http://127.0.0.1:8080
 functions:
         full-batch-full:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/full/pipelined-batch-processing/full-batch-full
                 image: arearnest7/full-batch-full:latest
                 labels:
@@ -16,7 +16,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-full
         original-batch-checksum:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-checksum
                 image: arearnest7/original-batch-checksum:latest
                 labels:
@@ -28,7 +28,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         original-batch-encrypt:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-encrypt
                 image: arearnest7/original-batch-encrypt:latest
                 labels:
@@ -40,7 +40,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         original-batch-main:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-main
                 image: arearnest7/original-batch-main:latest
                 labels:
@@ -48,7 +48,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-batch-zip:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-zip
                 image: arearnest7/original-batch-zip:latest
                 labels:
@@ -59,10 +59,10 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
-        partial-batch-checksum:
-                lang: pydatascience
-                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-checksum
-                image: arearnest7/partial-batch-checksum:latest
+        partial-batch-partial-checksum:
+                lang: python3-flask-debian
+                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-checksum
+                image: arearnest7/partial-batch-partial-checksum:latest
                 labels:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
@@ -71,10 +71,10 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
-        partial-batch-encrypt:
-                lang: pydatascience
-                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-encrypt
-                image: arearnest7/partial-batch-encrypt:latest
+        partial-batch-partial-encrypt:
+                lang: python3-flask-debian
+                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-encrypt
+                image: arearnest7/partial-batch-partial-encrypt:latest
                 labels:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
@@ -83,18 +83,18 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
-        partial-batch-main:
-                lang: pydatascience
-                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-main
-                image: arearnest7/partial-batch-main:latest
+        partial-batch-partial-main:
+                lang: python3-flask-debian
+                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-main
+                image: arearnest7/partial-batch-partial-main:latest
                 labels:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
-        partial-batch-zip:
-                lang: pydatascience
-                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-zip
-                image: arearnest7/partial-batch-zip:latest
+        partial-batch-partial-zip:
+                lang: python3-flask-debian
+                handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-zip
+                image: arearnest7/partial-batch-partial-zip:latest
                 labels:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
@@ -105,5 +105,5 @@ functions:
                         - aws-s3-partial
 configuration:
         templates:
-                - name: pydatascience
-                  source: https://github.com/LucasRoesler/pydatascience-template
+                - name: python3-flask-debian
+                  source: https://github.com/openfaas/python-flask-template

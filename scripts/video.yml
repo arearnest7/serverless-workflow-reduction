@@ -4,7 +4,7 @@ provider:
         gateway: http://127.0.0.1:8080
 functions:
         full-video-full:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/full/video-analytics/full-video-full
                 image: arearnest7/full-video-full:latest
                 labels:
@@ -16,8 +16,8 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-full
         full-video-full-throttle:
-                lang: pydatascience
-                handler: ../benchmarks/original/video-analytics-throttle/full-video-full-throttle
+                lang: python3-flask-debian
+                handler: ../benchmarks/full/video-analytics-throttle/full-video-full-throttle
                 image: arearnest7/full-video-full-throttle:latest
                 labels:
                         com.openfaas.scale.max: 2000
@@ -28,7 +28,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-full
         original-video-classify:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-classify
                 image: arearnest7/original-video-classify:latest
                 labels:
@@ -40,7 +40,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         original-video-extract:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-extract
                 image: arearnest7/original-video-extract:latest
                 labels:
@@ -52,7 +52,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         original-video-shuffle:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-shuffle
                 image: arearnest7/original-video-shuffle:latest
                 labels:
@@ -64,8 +64,8 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         original-video-split:
-                lang: pydatascience
-                handler: ../benchmarks/partial/video-analytics/original-video-split
+                lang: python3-flask-debian
+                handler: ../benchmarks/original/video-analytics/original-video-split
                 image: arearnest7/original-video-split:latest
                 labels:
                         com.openfaas.scale.max: 2000
@@ -76,7 +76,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         partial-video-classify:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/partial/video-analytics/partial-video-classify
                 image: arearnest7/partial-video-classify:latest
                 labels:
@@ -88,7 +88,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-partial
         partial-video-split-extract-shuffle:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/partial/video-analytics/partial-video-split-extract-shuffle
                 image: arearnest7/partial-video-split-extract-shuffle:latest
                 labels:
@@ -104,5 +104,5 @@ configuration:
                 - ./models
                 - ./images
         templates:
-                - name: pydatascience
-                  source: https://github.com/LucasRoesler/pydatascience-template
+                - name: python3-flask-debian
+                  source: https://github.com/openfaas/python-flask-template

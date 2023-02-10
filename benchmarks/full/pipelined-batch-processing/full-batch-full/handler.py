@@ -33,6 +33,7 @@ def zip_handler(req):
     s3_client.download_file(AWS_S3_Full, "checksumed/" + event[0] , "/tmp/temp")
     with ZipFile('/tmp/temp.zip', 'w') as zip:
         zip.write("/tmp/temp")
+    zip.close()
     s3_client.upload_file("/tmp/temp.zip", AWS_S3_Full, "ziped/"+event[0]+".zip")
     return "success"
 
@@ -42,13 +43,16 @@ def encrypt_handler(req):
     key = Fernet.generate_key()
     with open('/tmp/temp.key', 'wb') as filekey:
         filekey.write(key)
+    filekey.close()
     fernet = Fernet(key)
     data = ""
     with open("/tmp/temp.zip", "rb") as file:
         data = file.read()
+    file.close()
     encrypted_data = fernet.encrypt(data)
     with open("/tmp/temp.zip", "wb") as file:
         file.write(encrypted_data)
+    file.close()
     s3_client.upload_file("/tmp/temp.zip", AWS_S3_Full, "encrypted/"+event[0]+".zip")
     s3_client.upload_file("/tmp/temp.key", AWS_S3_Full, "encrypted/"+event[0]+".key")
     return "success"

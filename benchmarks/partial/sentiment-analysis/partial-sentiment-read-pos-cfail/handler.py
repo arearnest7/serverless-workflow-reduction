@@ -30,7 +30,7 @@ def product_or_service_handler(req):
         req (str): request body
     """
 
-    event = json.loads(req)
+    event = req
 
     results = ""
     if event["reviewType"] == "Product":
@@ -50,7 +50,7 @@ def read_csv_handler(req):
     '''
     
     #Fallback tests for initializations outside scope
-    event = json.loads(req)
+    event = req
     try:
         s3
     except NameError:
@@ -68,7 +68,7 @@ def read_csv_handler(req):
     #DictReader -> convert lines of CSV to OrderedDict
     for row in csv.DictReader(lines):
         #return just the first loop (row) results!
-        return product_or_service_handler(json.dumps(row))
+        return product_or_service_handler(row)
 
 def handle(req):
     '''
@@ -99,4 +99,4 @@ def handle(req):
     #)
     response = read_csv_handler(input)
     
-    return pp.pprint(response)
+    return response

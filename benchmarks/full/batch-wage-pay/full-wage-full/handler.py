@@ -96,7 +96,8 @@ def write_raw_handler(req):
     with open("/tmp/temp", "w") as f:
         f.write(req)
     s3.upload_file("/tmp/temp", AWS_S3_Full, "raw/" + str(params["id"]))
-    return "uploaded/updated " + str(params["id"])
+    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/full-wage-full', data = json.dumps(req))
+    return response.text
 
 def format_handler(req):
     params = json.loads(req)

@@ -28,7 +28,7 @@ def db_handler(req):
     Adds the review data to the review database table
     '''
     
-    event = json.loads(req)
+    event = req
     #select correct table based on input data
     dynamodb = boto3.client('dynamodb', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
     if event['reviewType'] == 'Product':
@@ -61,7 +61,7 @@ def db_handler(req):
     return json.dumps(response)
 
 def sns_handler(req):
-    event = json.loads(req)
+    event = req
     '''
     Sends notification of negative results from sentiment analysis via SNS
     '''

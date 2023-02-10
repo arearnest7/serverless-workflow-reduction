@@ -1,4 +1,0 @@
-{"data_payload": {"id": 0, "name": "Jackson Blanchard", "role": "staff", "base": 7, "merit": 8, "operator": 90408},
-"batch_payload": {"manifest": "min_0.mp4,63adca59344f5da6e02fcae8457b1a97\nmin_0909.mp4,63adca59344f5da6e02fcae8457b1a97\nmin_1.mp4,bb6231ebde3c8fc3f7414735eb9cd2bb\nmin_2.mp4,23c19ab247ed067412ada96e14beb6e0\nmin_3.mp4,a90b7b732fd4ce5ca340801f8b7e97da\nmin_4.mp4,a90b7b732fd4ce5ca340801f8b7e97da\nmin_5.mp4,09e6d053e532f1f13506695cef801a1c\n", "to_zip": "", "to_encrypt": ""},
-"sentiment_payload": {"Records": [{"s3": {"bucket": {"name": "workflow-full-bucket"}, "object":{"key": "review.csv"}}}]},
-"video_payload": {"src_name": "0", "DOP": "30", "detect_prob": 2}}

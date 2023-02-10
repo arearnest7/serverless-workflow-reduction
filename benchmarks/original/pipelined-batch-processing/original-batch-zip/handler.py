@@ -17,5 +17,6 @@ def handle(req):
     s3_client.download_file(AWS_S3_Full, "checksumed/" + event[0] , "/tmp/temp")
     with ZipFile('/tmp/temp.zip', 'w') as zip:
         zip.write("/tmp/temp")
+    zip.close()
     s3_client.upload_file("/tmp/temp.zip", AWS_S3_Full, "ziped/"+event[0]+".zip")
     return "success"

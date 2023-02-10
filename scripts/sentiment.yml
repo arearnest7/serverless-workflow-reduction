@@ -4,7 +4,7 @@ provider:
         gateway: http://127.0.0.1:8080
 functions:
         full-sentiment-full:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/full/sentiment-analysis/full-sentiment-full
                 image: arearnest7/full-sentiment-full:latest
                 labels:
@@ -19,7 +19,7 @@ functions:
                         - aws-products-db
                         - aws-services-db
         original-sentiment-cfail:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-cfail
                 image: arearnest7/original-sentiment-cfail:latest
                 labels:
@@ -27,7 +27,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-sentiment-db:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-db
                 image: arearnest7/original-sentiment-db:latest
                 labels:
@@ -40,7 +40,7 @@ functions:
                         - aws-products-db
                         - aws-services-db
         original-sentiment-main:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-main
                 image: arearnest7/original-sentiment-main:latest
                 labels:
@@ -48,7 +48,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-sentiment-product-or-service:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-or-service
                 image: arearnest7/original-sentiment-product-or-service:latest
                 labels:
@@ -56,7 +56,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-sentiment-product-result:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-result
                 image: arearnest7/original-sentiment-product-result:latest
                 labels:
@@ -64,7 +64,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-sentiment-product-sentiment:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-sentiment
                 image: arearnest7/original-sentiment-product-sentiment:latest
                 labels:
@@ -75,7 +75,7 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
         original-sentiment-read-csv:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-read-csv
                 image: arearnest7/original-sentiment-read-csv:latest
                 labels:
@@ -87,7 +87,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-original
         original-sentiment-service-result:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-service-result
                 image: arearnest7/original-sentiment-service-result:latest
                 labels:
@@ -95,7 +95,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-sentiment-service-sentiment:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-service-sentiment
                 image: arearnest7/original-sentiment-service-sentiment:latest
                 labels:
@@ -106,7 +106,7 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
         original-sentiment-sfail:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-sfail
                 image: arearnest7/original-sentiment-sfail:latest
                 labels:
@@ -114,7 +114,7 @@ functions:
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
         original-sentiment-sns:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-sns
                 image: arearnest7/original-sentiment-sns:latest
                 labels:
@@ -126,7 +126,7 @@ functions:
                         - aws-secret-access-key
                         - aws-sns
         partial-sentiment-product-path:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-product-path
                 image: arearnest7/partial-sentiment-product-path:latest
                 labels:
@@ -137,7 +137,7 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
         partial-sentiment-read-pos-cfail:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-read-pos-cfail
                 image: arearnest7/partial-sentiment-read-pos-cfail:latest
                 labels:
@@ -149,7 +149,7 @@ functions:
                         - aws-secret-access-key
                         - aws-s3-partial
         partial-sentiment-service-path:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-service-path
                 image: arearnest7/partial-sentiment-service-path:latest
                 labels:
@@ -160,7 +160,7 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
         partial-sentiment-sns-db:
-                lang: pydatascience
+                lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-sns-db
                 image: arearnest7/partial-sentiment-sns-db:latest
                 labels:
@@ -175,5 +175,5 @@ functions:
                         - aws-services-db
 configuration:
         templates:
-                - name: pydatascience
-                  source: https://github.com/LucasRoesler/pydatascience-template
+                - name: python3-flask-debian
+                  source: https://github.com/openfaas/python-flask-template
