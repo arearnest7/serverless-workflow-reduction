@@ -23,6 +23,7 @@ def write_merit_handler(req):
 
     with open("/tmp/temp", "w") as f:
         f.write(req)
+    f.close()
     s3.upload_file("/tmp/temp", AWS_S3_Full, "merit/" + str(params["id"]))
 
     return str(params["id"]) + " statistics uploaded/updated"
@@ -84,17 +85,18 @@ def stats_handler(req):
             merit['statistics'][doc['role']] += doc['merit']
 
     fs = []
-    with ThreadPoolExecutor(max_workers=len(manifest)) as executor:
+    with ThreadPoolExecutor(max_workers=1000) as executor:
         for obj in manifest["Contents"]:
             if obj["Key"] != "raw/":
                 fs.append(executor.submit(wage_sum_handler, json.dumps({'total': total, 'base': base, 'merit': merit, 'operator': obj["Key"]})))
-    results = [f.result() for f in fs]
+    results = [f for f in fs]
     return "processed batch at " + str(time.time())
 
 def write_raw_handler(req):
     params = json.loads(req)
     with open("/tmp/temp", "w") as f:
         f.write(req)
+    f.close()
     s3.upload_file("/tmp/temp", AWS_S3_Full, "raw/" + str(params["id"]))
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/full-wage-full', data = json.dumps(req))
     return response.text
@@ -134,7 +136,7 @@ def validator_handler(req):
 def handle(req):
     params = json.loads(req)
     response = ""
-    if len(params.keys()) > 0:
+    if isinstance(params, dict):
         response = validator_handler(req)
     else:
         response = stats_handler(req)

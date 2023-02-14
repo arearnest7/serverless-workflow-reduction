@@ -14,11 +14,11 @@ s3_client = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_acces
 
 def handle(req):
     event = req.split(",")
-    s3_client.download_file(AWS_S3_Full, "original/" + event[0], "/tmp/temp")
-    with open("/tmp/temp", "rb") as check:
+    s3_client.download_file(AWS_S3_Original, "original/" + event[0], "/tmp/checksum")
+    with open("/tmp/checksum", "rb") as check:
         data = check.read()
         md5 = hashlib.md5(data).hexdigest()
     if event[1] == md5:
-        s3_client.upload_file("/tmp/temp", AWS_S3_Full, "checksumed/"+event[0])
+        s3_client.upload_file("/tmp/checksum", AWS_S3_Original, "checksumed/"+event[0])
         return "success"
     return "failed"

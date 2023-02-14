@@ -14,9 +14,9 @@ s3_client = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_acces
 
 def handle(req):
     event = req.split(",")
-    s3_client.download_file(AWS_S3_Full, "checksumed/" + event[0] , "/tmp/temp")
-    with ZipFile('/tmp/temp.zip', 'w') as zip:
-        zip.write("/tmp/temp")
+    s3_client.download_file(AWS_S3_Partial, "checksumed/" + event[0] , "/tmp/" + event[0])
+    with ZipFile('/tmp/zip.zip', 'w') as zip:
+        zip.write("/tmp/" + event[0])
     zip.close()
-    s3_client.upload_file("/tmp/temp.zip", AWS_S3_Full, "ziped/"+event[0]+".zip")
+    s3_client.upload_file("/tmp/zip.zip", AWS_S3_Partial, "ziped/"+event[0]+".zip")
     return "success"

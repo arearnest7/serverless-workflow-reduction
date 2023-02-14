@@ -23,5 +23,5 @@ def handle(req):
                 return "fail: illegal params: " + str(event[param]) + " not between 1 and 8 inclusively"
         else:
             return "fail: missing param: " + param
-    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-wage-format', data = json.dumps(req))
+    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-wage-format', data = req)
     return response.text

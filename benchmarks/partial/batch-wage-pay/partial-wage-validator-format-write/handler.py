@@ -17,15 +17,16 @@ with open("/var/openfaas/secrets/aws-s3-partial", "r") as f:
 s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
 
 def write_raw_handler(req):
-    data = json.loads(req)
+    params = json.loads(req)
     with open("/tmp/temp", "w") as f:
         f.write(req)
+    f.close()
     s3.upload_file("/tmp/temp", AWS_S3_Partial, "raw/" + str(params["id"]))
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-wage-stats', data = json.dumps(req))
     return response.text
 
 def format_handler(req):
-    data = json.loads(req)
+    params = json.loads(req)
     params['INSURANCE'] = INSURANCE
 
     total = INSURANCE + params['base'] + params['merit']

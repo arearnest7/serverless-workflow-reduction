@@ -14,20 +14,20 @@ s3_client = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_acces
 
 def handle(req):
     event = req.split(",")
-    s3_client.download_file(AWS_S3_Full, "ziped/" + event[0] + ".zip", "/tmp/temp.zip")
+    s3_client.download_file(AWS_S3_Original, "ziped/" + event[0] + ".zip", "/tmp/" + event[0] + ".zip")
     key = Fernet.generate_key()
-    with open('/tmp/temp.key', 'wb') as filekey:
+    with open('/tmp/key.key', 'wb') as filekey:
         filekey.write(key)
     filekey.close()
     fernet = Fernet(key)
     data = ""
-    with open("/tmp/temp.zip", "rb") as file:
+    with open("/tmp/" + event[0] + ".zip", "rb") as file:
         data = file.read()
     file.close()
     encrypted_data = fernet.encrypt(data)
-    with open("/tmp/temp.zip", "wb") as file:
+    with open("/tmp/encrypt.zip", "wb") as file:
         file.write(encrypted_data)
     file.close()
-    s3_client.upload_file("/tmp/temp.zip", AWS_S3_Full, "encrypted/"+event[0]+".zip")
-    s3_client.upload_file("/tmp/temp.key", AWS_S3_Full, "encrypted/"+event[0]+".key")
+    s3_client.upload_file("/tmp/encrypt.zip", AWS_S3_Original, "encrypted/"+event[0]+".zip")
+    s3_client.upload_file("/tmp/key.key", AWS_S3_Original, "encrypted/"+event[0]+".key")
     return "success"

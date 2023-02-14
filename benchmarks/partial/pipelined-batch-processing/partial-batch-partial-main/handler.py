@@ -22,12 +22,12 @@ def handle_handler(req):
         if to_zip != "":
             fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-batch-partial-zip' , data = to_zip))
         if to_encrypt != "":
-            fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-batch=partial-encrypt' , data = to_encrypt))
+            fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-batch-partial-encrypt' , data = to_encrypt))
     results = [f.result().text for f in fs]
     if to_checksum != "" or to_zip != "":
         if to_checksum != "" and "success" not in results[0]:
             to_checksum = ""
-        return handle_handler({"manifest": new_manifest, "to_zip": to_checksum, "to_encrypt": to_zip})
+        return handle_handler(json.dumps({"manifest": new_manifest, "to_zip": to_checksum, "to_encrypt": to_zip}))
     return "success"
 
 def handle(req):
@@ -45,10 +45,10 @@ def handle(req):
         if to_zip != "":
             fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-batch-partial-zip' , data = to_zip))
         if to_encrypt != "":
-            fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-batch=partial-encrypt' , data = to_encrypt))
+            fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-batch-partial-encrypt' , data = to_encrypt))
     results = [f.result().text for f in fs]
     if to_checksum != "" or to_zip != "":
         if to_checksum != "" and "success" not in results[0]:
             to_checksum = ""
-        return handle_handler({"manifest": new_manifest, "to_zip": to_checksum, "to_encrypt": to_zip})
+        return handle_handler(json.dumps({"manifest": new_manifest, "to_zip": to_checksum, "to_encrypt": to_zip}))
     return "success"

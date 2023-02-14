@@ -17,5 +17,5 @@ def handle(req):
             merit = params['merit']['statistics'][role]
             meritp[role] = merit / base
     params['statistics']['average-merit-percent'] = meritp
-    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-wage-write-merit', text = json.dumps({'id': params['id'], 'statistics': params['statistics'], 'operator' : json.dumps(params['operator']})))
+    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-wage-write-merit', data = json.dumps({'id': params['id'], 'statistics': params['statistics'], 'operator' : params['operator']}))
     return response.text

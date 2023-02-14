@@ -15,6 +15,13 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-full
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
+                        ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
         full-video-full-throttle:
                 lang: python3-flask-debian
                 handler: ../benchmarks/full/video-analytics-throttle/full-video-full-throttle
@@ -27,6 +34,13 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-full
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
+                        ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
         original-video-classify:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-classify
@@ -39,6 +53,13 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
+                        ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
         original-video-extract:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-extract
@@ -51,6 +72,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         original-video-shuffle:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-shuffle
@@ -63,6 +90,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         original-video-split:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/video-analytics/original-video-split
@@ -75,6 +108,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         partial-video-classify:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/video-analytics/partial-video-classify
@@ -87,6 +126,13 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
+                        ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
         partial-video-split-extract-shuffle:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/video-analytics/partial-video-split-extract-shuffle
@@ -99,6 +145,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
 configuration:
         copy:
                 - ./models

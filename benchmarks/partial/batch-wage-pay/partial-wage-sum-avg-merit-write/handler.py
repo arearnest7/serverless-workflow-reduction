@@ -20,6 +20,7 @@ def write_merit_handler(req):
 
     with open("/tmp/temp", "w") as f:
         f.write(req)
+    f.close()
     s3.upload_file("/tmp/temp", AWS_S3_Partial, "merit/" + str(params["id"]))
 
     return str(params["id"]) + " statistics uploaded/updated"
@@ -52,7 +53,7 @@ def wage_avg_handler(req):
 
 def handle(req):
     params = json.loads(req)
-    s3.download_file(AWS_S3_Partial, params["operator"], "tmp/temp")
+    s3.download_file(AWS_S3_Partial, params["operator"], "/tmp/temp")
     with open("/tmp/temp", "r") as f:
         temp = json.load(f)
         params["operator"] = temp["operator"]

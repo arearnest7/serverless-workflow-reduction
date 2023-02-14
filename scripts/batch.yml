@@ -15,6 +15,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-full
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         original-batch-checksum:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-checksum
@@ -27,6 +33,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         original-batch-encrypt:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-encrypt
@@ -39,6 +51,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         original-batch-main:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-main
@@ -47,6 +65,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         original-batch-zip:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-zip
@@ -59,6 +83,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         partial-batch-partial-checksum:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-checksum
@@ -71,6 +101,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         partial-batch-partial-encrypt:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-encrypt
@@ -83,6 +119,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         partial-batch-partial-main:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-main
@@ -91,6 +133,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
         partial-batch-partial-zip:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-zip
@@ -103,6 +151,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                build_args:
+                        TEST_ENABLED: false
 configuration:
         templates:
                 - name: python3-flask-debian

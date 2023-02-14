@@ -18,6 +18,8 @@ functions:
                         - aws-sns
                         - aws-products-db
                         - aws-services-db
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-cfail:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-cfail
@@ -26,6 +28,8 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-db:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-db
@@ -39,6 +43,8 @@ functions:
                         - aws-secret-access-key
                         - aws-products-db
                         - aws-services-db
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-main:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-main
@@ -47,6 +53,8 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-product-or-service:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-or-service
@@ -55,6 +63,8 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-product-result:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-result
@@ -63,6 +73,8 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-product-sentiment:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-product-sentiment
@@ -74,6 +86,8 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-read-csv:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-read-csv
@@ -86,6 +100,8 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-original
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-service-result:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-service-result
@@ -94,6 +110,8 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-service-sentiment:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-service-sentiment
@@ -105,6 +123,8 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-sfail:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-sfail
@@ -113,6 +133,8 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                build_args:
+                        TEST_ENABLED: false
         original-sentiment-sns:
                 lang: python3-flask-debian
                 handler: ../benchmarks/original/sentiment-analysis/original-sentiment-sns
@@ -125,6 +147,8 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-sns
+                build_args:
+                        TEST_ENABLED: false
         partial-sentiment-product-path:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-product-path
@@ -136,6 +160,8 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                build_args:
+                        TEST_ENABLED: false
         partial-sentiment-read-pos-cfail:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-read-pos-cfail
@@ -148,6 +174,8 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                build_args:
+                        TEST_ENABLED: false
         partial-sentiment-service-path:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-service-path
@@ -159,6 +187,8 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                build_args:
+                        TEST_ENABLED: false
         partial-sentiment-sns-db:
                 lang: python3-flask-debian
                 handler: ../benchmarks/partial/sentiment-analysis/partial-sentiment-sns-db
@@ -173,6 +203,8 @@ functions:
                         - aws-sns
                         - aws-products-db
                         - aws-services-db
+                build_args:
+                        TEST_ENABLED: false
 configuration:
         templates:
                 - name: python3-flask-debian

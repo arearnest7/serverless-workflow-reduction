@@ -1,5 +1,9 @@
+import requests
 import boto3
 import json
+
+OF_Gateway_IP="gateway.openfaas"
+OF_Gateway_Port="8080"
 
 with open("/var/openfaas/secrets/aws-access-key", "r") as f:
     AWS_AccessKey=f.read()
@@ -14,6 +18,7 @@ def handle(req):
     params = json.loads(req)
     with open("/tmp/temp", "w") as f:
         f.write(req)
+    f.close()
     s3.upload_file("/tmp/temp", AWS_S3_Original, "raw/" + str(params["id"]))
-    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-wage-stats', data = json.dumps(req))
+    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-wage-stats', data = json.dumps(params))
     return response.text

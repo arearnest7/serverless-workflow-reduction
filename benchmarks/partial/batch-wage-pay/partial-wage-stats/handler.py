@@ -34,9 +34,9 @@ def handle(req):
                 merit['statistics'][doc['role']] += doc['merit']
 
     fs = []
-    with ThreadPoolExecutor(max_workers=len(manifest)) as executor:
+    with ThreadPoolExecutor(max_workers=1000) as executor:
         for obj in manifest["Contents"]:
             if obj["Key"] != "raw/":
                 fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-wage-sum-avg-merit-write', data = json.dumps({'total': total, 'base': base, 'merit': merit, 'operator': obj["Key"]})))
-    results = [f.result() for f in fs]
+    results = [f for f in fs]
     return "processed batch at " + str(time.time())
