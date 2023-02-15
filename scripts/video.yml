@@ -153,6 +153,7 @@ functions:
                         TEST_ENABLED: false
 configuration:
         copy:
+                - ./var
                 - ./models
                 - ./images
         templates:

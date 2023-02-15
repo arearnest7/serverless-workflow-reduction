@@ -23,11 +23,6 @@ with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
 with open("/var/openfaas/secrets/aws-s3-original", "r") as f:
     AWS_S3_Original=f.read()
 
-session = boto3.Session(
-    aws_access_key_id=AWS_AccessKey,
-    aws_secret_access_key=AWS_SecretAccessKey,
-)
-
 def handle(req):
     event = json.loads(req)
     if('dummy' in event) and (event['dummy'] == 1):
@@ -111,7 +106,7 @@ def handle(req):
     with ThreadPoolExecutor(max_workers=len(listOfDics)) as executor:
         for i in range(len(listOfDics)):
             fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-video-extract', data = json.dumps(listOfDics[i])))
-    results = [f for f in fs]
+    results = [f.result().text for f in fs]
     payload = {}
     for i in range(len(results)):
         payload[str(i)] = results[i]
