@@ -9,7 +9,7 @@ import time
 import requests
 from urllib.parse import unquote_plus
 
-FFMPEG_STATIC = "var/ffmpeg"
+FFMPEG_STATIC = "function/var/ffmpeg"
 
 length_regexp = 'Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,'
 re_length = re.compile(length_regexp)

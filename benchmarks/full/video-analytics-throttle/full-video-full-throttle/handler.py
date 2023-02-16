@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageFile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
 
-FFMPEG_STATIC = "var/ffmpeg"
+FFMPEG_STATIC = "function/var/ffmpeg"
 
 length_regexp = 'Duration: (\d{2}):(\d{2}):(\d{2})\.\d+,'
 re_length = re.compile(length_regexp)
@@ -40,7 +40,7 @@ def delete_tmp():
 
 def detect_object(index, index2, image):
     detector = ObjectDetection()
-    model_path = "./models/yolo-tiny.h5"
+    model_path = "./function/models/yolo-tiny.h5"
 
     start_time = int(round(time.time() * 1000))
 
@@ -67,7 +67,7 @@ def detect_object(index, index2, image):
     #if(index == 29):
     #   input_path = "~/images/input_slow.jpg"
 
-    output_path = "./images/output_" + str(index) + ".jpg"
+    output_path = "./function/images/output_" + str(index) + ".jpg"
     detector.setModelTypeAsTinyYOLOv3()
 
     detector.setModelPath(model_path)
