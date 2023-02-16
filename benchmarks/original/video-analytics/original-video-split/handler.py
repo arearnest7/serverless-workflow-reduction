@@ -109,7 +109,7 @@ def handle(req):
     results = [f.result().text for f in fs]
     payload = {}
     for i in range(len(results)):
-        payload[str(i)] = results[i]
+        payload[i] = results[i]
     print(payload)
     results = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-video-shuffle', data = json.dumps(payload))
     return results.text

@@ -364,7 +364,7 @@ def handle(req):
     results = [f.json() for f in fs]
     payload = {}
     for i in range(len(results)):
-        payload[str(i)] = results[i]
+        payload[i] = results[i]
     print(payload)
     results = shuffle_handler(json.dumps(payload))
     return results
