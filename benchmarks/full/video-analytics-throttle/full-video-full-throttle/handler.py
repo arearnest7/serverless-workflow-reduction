@@ -364,11 +364,9 @@ def handle(req):
     }
     print(returnedObj)
     fs = []
-    for j in range(int(len(listOfDics)/5)):
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            for i in range(5):
-                fs.append(executor.submit(extract_handler, json.dumps(listOfDics[(j * 5) + i])))
-    results = [json.loads(f.result()) for f in fs]
+    for i in range(len(listOfDics)):
+        fs.append(extract_handler(json.dumps(listOfDics[i])))
+    results = [json.loads(f) for f in fs]
     payload = {}
     for i in range(len(results)):
         payload[str(i)] = results[i]
