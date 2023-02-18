@@ -8,7 +8,7 @@ import subprocess
 import re
 import time
 
-FFMPEG_STATIC = "var/ffmpeg"
+FFMPEG_STATIC = "function/var/ffmpeg"
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
@@ -59,7 +59,7 @@ def handle(req):
         try:
             s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
         except:
-            s3_client.upload_file("var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
     print("Done!") 
 
     obj= {
@@ -74,4 +74,4 @@ def handle(req):
         
     }
     #print(obj)
-    return obj
+    return json.dumps(obj)

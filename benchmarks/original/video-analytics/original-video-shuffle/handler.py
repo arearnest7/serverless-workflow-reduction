@@ -11,21 +11,22 @@ def handle(req):
     # TODO implement
     # Remove below line for ORG DAG
     #event = event["detail"]["indeces"]
+    #print(event)
     trips=[]
     counter_out=0
     src_id_out=""
     detect_prob=-1
     for eve in range(len(event)):
-        counter_out=event[eve]["counter"]
-        src_id_out=event[eve]["source_id"]
-        detect_prob=event[eve]["detect_prob"]
-        for c in range(event[eve]["counter"]):
-            val = event[eve]["values"][c]
-            m1 = event[eve]["millis1"][c]
-            m2 = event[eve]["millis2"][c]
+        counter_out=event[str(eve)]["counter"]
+        src_id_out=event[str(eve)]["source_id"]
+        detect_prob=event[str(eve)]["detect_prob"]
+        for c in range(event[str(eve)]["counter"]):
+            val = event[str(eve)]["values"][c]
+            m1 = event[str(eve)]["millis1"][c]
+            m2 = event[str(eve)]["millis2"][c]
             trips.append((val,m1,m2))
     
-    print(trips)
+    #print(trips)
     #random.shuffle(trips)
     #print(trips)
     
@@ -71,5 +72,6 @@ def handle(req):
     with ThreadPoolExecutor(max_workers=len(returnedDic["detail"]["indeces"])) as executor:
         for i in range(len(returnedDic["detail"]["indeces"])):
             fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-video-classify', data = json.dumps(returnedDic["detail"]["indeces"][i])))
-    results = [f.text for f in fs]
+    results = [f.result().text for f in fs]
+    print(results)
     return json.dumps(results)

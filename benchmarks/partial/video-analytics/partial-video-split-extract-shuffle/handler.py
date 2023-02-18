@@ -8,6 +8,7 @@ import re
 import time
 import requests
 from urllib.parse import unquote_plus
+from concurrent.futures import ThreadPoolExecutor
 
 FFMPEG_STATIC = "function/var/ffmpeg"
 
@@ -33,13 +34,13 @@ def shuffle_handler(req):
     src_id_out=""
     detect_prob=-1
     for eve in range(len(event)):
-        counter_out=event[eve]["counter"]
-        src_id_out=event[eve]["source_id"]
-        detect_prob=event[eve]["detect_prob"]
-        for c in range(event[eve]["counter"]):
-            val = event[eve]["values"][c]
-            m1 = event[eve]["millis1"][c]
-            m2 = event[eve]["millis2"][c]
+        counter_out=event[str(eve)]["counter"]
+        src_id_out=event[str(eve)]["source_id"]
+        detect_prob=event[str(eve)]["detect_prob"]
+        for c in range(event[str(eve)]["counter"]):
+            val = event[str(eve)]["values"][c]
+            m1 = event[str(eve)]["millis1"][c]
+            m2 = event[str(eve)]["millis2"][c]
             trips.append((val,m1,m2))
 
     print(trips)
@@ -88,7 +89,7 @@ def shuffle_handler(req):
     with ThreadPoolExecutor(max_workers=len(returnedDic["detail"]["indeces"])) as executor:
         for i in range(len(returnedDic["detail"]["indeces"])):
             fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/partial-video-classify', data = json.dumps(returnedDic["detail"]["indeces"][i])))
-    results = [f.text for f in fs]
+    results = [f.result().text for f in fs]
     return json.dumps(results)
 
 def extract_handler(req):
@@ -131,7 +132,7 @@ def extract_handler(req):
         try:
             s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
         except:
-            s3_client.upload_file("var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
     print("Done!") 
 
     obj= {
@@ -146,7 +147,7 @@ def extract_handler(req):
         
     }
     #print(obj)
-    return obj
+    return json.dumps(obj)
 
 def handle(req):
     event = json.loads(req)
@@ -230,11 +231,11 @@ def handle(req):
     fs = []
     with ThreadPoolExecutor(max_workers=len(listOfDics)) as executor:
         for i in range(len(listOfDics)):
-            fs.append(executor.submit(extract_handler, listOfDics[i]))
-    results = [f for f in fs]
+            fs.append(executor.submit(extract_handler, json.dumps(listOfDics[i])))
+    results = [json.loads(f.result()) for f in fs]
     payload = {}
     for i in range(len(results)):
-        payload[i] = results[i]
+        payload[str(i)] = results[i]
     print(payload)
     results = shuffle_handler(json.dumps(payload))
     return results

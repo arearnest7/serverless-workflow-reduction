@@ -8,6 +8,7 @@ from boto3.s3.transfer import TransferConfig
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageFile
 import zipfile
 import os
+import json
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
@@ -25,9 +26,9 @@ def delete_tmp():
         for name in dirs:
             os.rmdir(os.path.join(root, name))
 
-def detect_object(index, index2, image):
+def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob):
     detector = ObjectDetection()
-    model_path = "./function/models/yolo-tiny.h5"
+    model_path = "function/models/yolo-tiny.h5"
 
     start_time = int(round(time.time() * 1000))
 
@@ -38,15 +39,14 @@ def detect_object(index, index2, image):
     )
     config = TransferConfig(use_threads=False)
     bucket_name = AWS_S3_Partial
- 
-    worker_dir = "./tmp/" + "Worker_" + str(index)
-    
+
+    worker_dir = "/tmp/" + "Worker_" + str(index)
     if not os.path.exists(worker_dir):
-        os.mkdir(worker_dir) 
+        os.mkdir(worker_dir)
 
     filename = worker_dir + "/image_" + str(index) + ".jpg"
     f = open(filename, "wb")
-    key = "MS_Coco/" + image
+    key = image
     s3_client.download_fileobj(bucket_name, key , f, Config=config)
     f.close()
     print("Download duration: " + str(time.time() * 1000 - start_time))
@@ -54,7 +54,7 @@ def detect_object(index, index2, image):
     #if(index == 29):
     #   input_path = "~/images/input_slow.jpg"
 
-    output_path = "./function/images/output_" + str(index) + ".jpg"
+    output_path = "function/images/output_" + str(index) + ".jpg"
     detector.setModelTypeAsTinyYOLOv3()
 
     detector.setModelPath(model_path)
@@ -62,8 +62,8 @@ def detect_object(index, index2, image):
 
     start_time = time.time() * 1000
 
-    detection = detector.detectObjectsFromImage(input_image=filename, output_image_path=output_path,  minimum_percentage_probability=2)
-     
+    detection = detector.detectObjectsFromImage(input_image=filename, output_image_path=output_path,  minimum_percentage_probability=detect_prob)
+
     for box in range(len(detection)):
         print(detection[box])      
      
@@ -82,13 +82,14 @@ def detect_object(index, index2, image):
             ths[t].start()
         for t in range(threads):
             ths[t].join()
-    zipFileName = "detected_images_" + str(index) + ".zip"
-    myzip = zipfile.ZipFile("./tmp/" + zipFileName, 'w', zipfile.ZIP_DEFLATED)
-    
+    millis_3 = int(round(time.time() * 1000))
+    zipFileName = "detected_images_" + str(src_video)+ "_" + str(index) + "_" + str(milli_1[0]) + "_" + str(milli_2[0]) + "_"  + str(millis_3) +  ".zip"
+    myzip = zipfile.ZipFile("/tmp/" + zipFileName, 'w', zipfile.ZIP_DEFLATED)
+
     for f in os.listdir(worker_dir):
-        myzip.write(worker_dir + "/" + f) 
-    
-    s3_client.upload_file("./tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
+        myzip.write(worker_dir + "/" + f)
+
+    s3_client.upload_file("/tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
     print("file uploaded " + zipFileName)   
 
 def crop_and_sharpen(original_image, t, detection ,start_index, end_index, worker_dir):
@@ -105,6 +106,9 @@ def crop_and_sharpen(original_image, t, detection ,start_index, end_index, worke
 
 def handle(req):
     event = json.loads(req)
+    if('dummy' in event) and (event['dummy'] == 1):
+        print("Dummy call, doing nothing")
+        return
     start_time = int(round(time.time() * 1000))
     
     s3_client = boto3.client(
@@ -117,17 +121,20 @@ def handle(req):
     bucket_name = AWS_S3_Partial
 
     list_of_chunks = event['values']
-    list_of_images = event['images']
+    #list_of_images = event['images']
 
     print(list_of_chunks[0])
-    #src_video = event['source_id']
-    #millis_list1 = event['millis1']
-    #millis_list2 = event['millis2']
+    src_video = event['source_id']
+    millis_list1 = event['millis1']
+    millis_list2 = event['millis2']
+    detect_prob = event['detect_prob']
 
     ths=[]
     num_workers = len(list_of_chunks)
     for w in range(num_workers):
-        ths.append(Process(target=detect_object,  args=(list_of_chunks[w], list_of_chunks[w], list_of_images[w])))
+        
+        key="Video_Frames_Step/frame_" + str(src_video) + "_" + str(list_of_chunks[w]) + "_" + str(millis_list1[w]) + "_" + str(millis_list2[w]) + ".jpg"
+        ths.append(Process(target=detect_object,  args=(list_of_chunks[w], list_of_chunks[w], key, src_video, millis_list1, millis_list2, detect_prob)))
 
     for t in range(num_workers):
         ths[t].start()
@@ -135,7 +142,7 @@ def handle(req):
         ths[t].join()
 
     end_time = time.time() * 1000
+    diff_time = str( end_time  - start_time )
     print("duration: " + str(end_time-start_time))
+    return json.dumps({ 'duration': diff_time, 'values': str(event['values']) })
     delete_tmp()
-
-    return req

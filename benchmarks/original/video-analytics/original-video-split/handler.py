@@ -106,10 +106,10 @@ def handle(req):
     with ThreadPoolExecutor(max_workers=len(listOfDics)) as executor:
         for i in range(len(listOfDics)):
             fs.append(executor.submit(requests.get, url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-video-extract', data = json.dumps(listOfDics[i])))
-    results = [f.result().text for f in fs]
+    results = [json.loads(f.result().text) for f in fs]
     payload = {}
     for i in range(len(results)):
-        payload[i] = results[i]
+        payload[str(i)] = results[i]
     print(payload)
     results = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-video-shuffle', data = json.dumps(payload))
     return results.text

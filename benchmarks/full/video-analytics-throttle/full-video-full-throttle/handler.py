@@ -38,9 +38,9 @@ def delete_tmp():
         for name in dirs:
             os.rmdir(os.path.join(root, name))
 
-def detect_object(index, index2, image):
+def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob):
     detector = ObjectDetection()
-    model_path = "./function/models/yolo-tiny.h5"
+    model_path = "function/models/yolo-tiny.h5"
 
     start_time = int(round(time.time() * 1000))
 
@@ -52,14 +52,13 @@ def detect_object(index, index2, image):
     config = TransferConfig(use_threads=False)
     bucket_name = AWS_S3_Full
 
-    worker_dir = "./tmp/" + "Worker_" + str(index)
-
+    worker_dir = "/tmp/" + "Worker_" + str(index)
     if not os.path.exists(worker_dir):
         os.mkdir(worker_dir)
 
     filename = worker_dir + "/image_" + str(index) + ".jpg"
     f = open(filename, "wb")
-    key = "MS_Coco/" + image
+    key = image
     s3_client.download_fileobj(bucket_name, key , f, Config=config)
     f.close()
     print("Download duration: " + str(time.time() * 1000 - start_time))
@@ -67,7 +66,7 @@ def detect_object(index, index2, image):
     #if(index == 29):
     #   input_path = "~/images/input_slow.jpg"
 
-    output_path = "./function/images/output_" + str(index) + ".jpg"
+    output_path = "function/images/output_" + str(index) + ".jpg"
     detector.setModelTypeAsTinyYOLOv3()
 
     detector.setModelPath(model_path)
@@ -75,49 +74,53 @@ def detect_object(index, index2, image):
 
     start_time = time.time() * 1000
 
-    detection = detector.detectObjectsFromImage(input_image=filename, output_image_path=output_path,  minimum_percentage_probability=2)
+    detection = detector.detectObjectsFromImage(input_image=filename, output_image_path=output_path,  minimum_percentage_probability=detect_prob)
 
     for box in range(len(detection)):
         print(detection[box])
 
-        if (len(detection)>10):
-            original_image = Image.open(filename, mode='r')
-            ths = []
-            threads=10
-            start_index = 0
-            step_size = int(len(detection) / threads) + 1
+    if (len(detection)>10):
+        original_image = Image.open(filename, mode='r')
+        ths = []
+        threads=10
+        start_index = 0
+        step_size = int(len(detection) / threads) + 1
 
-            for t in range(threads):
-                end_index = min(start_index + step_size , len(detection))
-                ths.append(Process(target=crop_and_sharpen, args=(original_image.copy(), t, detection, start_index , end_index, worker_dir)))
-                start_index = end_index
-            for t in range(threads):
-                ths[t].start()
-            for t in range(threads):
-                ths[t].join()
-        zipFileName = "detected_images_" + str(index) + ".zip"
-        myzip = zipfile.ZipFile("./tmp/" + zipFileName, 'w', zipfile.ZIP_DEFLATED)
+        for t in range(threads):
+            end_index = min(start_index + step_size , len(detection))
+            ths.append(Process(target=crop_and_sharpen, args=(original_image.copy(), t, detection, start_index , end_index, worker_dir)))
+            start_index = end_index
+        for t in range(threads):
+            ths[t].start()
+        for t in range(threads):
+            ths[t].join()
+    millis_3 = int(round(time.time() * 1000))
+    zipFileName = "detected_images_" + str(src_video)+ "_" + str(index) + "_" + str(milli_1[0]) + "_" + str(milli_2[0]) + "_"  + str(millis_3) +  ".zip"
+    myzip = zipfile.ZipFile("/tmp/" + zipFileName, 'w', zipfile.ZIP_DEFLATED)
 
-        for f in os.listdir(worker_dir):
-            myzip.write(worker_dir + "/" + f)
+    for f in os.listdir(worker_dir):
+        myzip.write(worker_dir + "/" + f)
 
-        s3_client.upload_file("./tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
-        print("file uploaded " + zipFileName)
+    s3_client.upload_file("/tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
+    print("file uploaded " + zipFileName)
 
 def crop_and_sharpen(original_image, t, detection ,start_index, end_index, worker_dir):
     for box in range(start_index, end_index):
-        im_temp = original_image.crop((detection[box]['box_points'][0], detection[box]['box_points'][1], detection[box]['box_points'][2], detection[box]['box_points'][3]))
-        im_resized = im_temp.resize((1408, 1408))
-        im_resized_sharpened =  im_resized.filter(ImageFilter.SHARPEN)
-        fileName = worker_dir + "/" + detection[box]['name']  + "_" + str(box) + "_" + str(t) + "_" + ".jpg"
-        im_resized_sharpened.save(fileName)
-    #im_temp.save(fileName)
+            im_temp = original_image.crop((detection[box]['box_points'][0], detection[box]['box_points'][1], detection[box]['box_points'][2], detection[box]['box_points'][3]))
+            im_resized = im_temp.resize((1408, 1408))
+            im_resized_sharpened =  im_resized.filter(ImageFilter.SHARPEN)
+            fileName = worker_dir + "/" + detection[box]['name']  + "_" + str(box) + "_" + str(t) + "_" + ".jpg"
+            im_resized_sharpened.save(fileName)
+            #im_temp.save(fileName)
 
-    #print(detection)
+    #print(detection) 
     print(len(detection))
 
 def classify_handler(req):
     event = json.loads(req)
+    if('dummy' in event) and (event['dummy'] == 1):
+        print("Dummy call, doing nothing")
+        return
     start_time = int(round(time.time() * 1000))
 
     s3_client = boto3.client(
@@ -130,17 +133,20 @@ def classify_handler(req):
     bucket_name = AWS_S3_Full
 
     list_of_chunks = event['values']
-    list_of_images = event['images']
+    #list_of_images = event['images']
 
     print(list_of_chunks[0])
-    #src_video = event['source_id']
-    #millis_list1 = event['millis1']
-    #millis_list2 = event['millis2']
+    src_video = event['source_id']
+    millis_list1 = event['millis1']
+    millis_list2 = event['millis2']
+    detect_prob = event['detect_prob']
 
     ths=[]
     num_workers = len(list_of_chunks)
     for w in range(num_workers):
-        ths.append(Process(target=detect_object,  args=(list_of_chunks[w], list_of_chunks[w], list_of_images[w])))
+
+        key="Video_Frames_Step/frame_" + str(src_video) + "_" + str(list_of_chunks[w]) + "_" + str(millis_list1[w]) + "_" + str(millis_list2[w]) + ".jpg"
+        ths.append(Process(target=detect_object,  args=(list_of_chunks[w], list_of_chunks[w], key, src_video, millis_list1, millis_list2, detect_prob)))
 
     for t in range(num_workers):
         ths[t].start()
@@ -148,10 +154,10 @@ def classify_handler(req):
         ths[t].join()
 
     end_time = time.time() * 1000
+    diff_time = str( end_time  - start_time )
     print("duration: " + str(end_time-start_time))
+    return json.dumps({ 'duration': diff_time, 'values': str(event['values']) })
     delete_tmp()
-
-    return req
 
 def extract_handler(req):
     event = json.loads(req)
@@ -193,7 +199,7 @@ def extract_handler(req):
         try:
             s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
         except:
-            s3_client.upload_file("var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
             print("Done!")
 
     obj= {
@@ -208,7 +214,7 @@ def extract_handler(req):
 
     }
     #print(obj)
-    return obj
+    return json.dumps(obj)
 
 def shuffle_handler(req):
     event = json.loads(req)
@@ -220,13 +226,13 @@ def shuffle_handler(req):
     src_id_out=""
     detect_prob=-1
     for eve in range(len(event)):
-        counter_out=event[eve]["counter"]
-        src_id_out=event[eve]["source_id"]
-        detect_prob=event[eve]["detect_prob"]
-        for c in range(event[eve]["counter"]):
-            val = event[eve]["values"][c]
-            m1 = event[eve]["millis1"][c]
-            m2 = event[eve]["millis2"][c]
+        counter_out=event[str(eve)]["counter"]
+        src_id_out=event[str(eve)]["source_id"]
+        detect_prob=event[str(eve)]["detect_prob"]
+        for c in range(event[str(eve)]["counter"]):
+            val = event[str(eve)]["values"][c]
+            m1 = event[str(eve)]["millis1"][c]
+            m2 = event[str(eve)]["millis2"][c]
             trips.append((val,m1,m2))
 
     print(trips)
@@ -275,7 +281,7 @@ def shuffle_handler(req):
     with ThreadPoolExecutor(max_workers=len(returnedDic["detail"]["indeces"])) as executor:
         for i in range(len(returnedDic["detail"]["indeces"])):
             fs.append(executor.submit(classify_handler, json.dumps(returnedDic["detail"]["indeces"][i])))
-    results = [f.json() for f in fs]
+    results = [f.result() for f in fs]
     return json.dumps(results)
 
 def handle(req):
@@ -358,13 +364,14 @@ def handle(req):
     }
     print(returnedObj)
     fs = []
-    with ThreadPoolExecutor(max_workers=5) as executor:
-        for i in range(len(listOfDics)):
-            fs.append(executor.submit(extract_handler, json.dumps(listOfDics[i])))
-    results = [f.json() for f in fs]
+    for j in range(int(len(listOfDics)/5)):
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            for i in range(5):
+                fs.append(executor.submit(extract_handler, json.dumps(listOfDics[(j * 5) + i])))
+    results = [json.loads(f.result()) for f in fs]
     payload = {}
     for i in range(len(results)):
-        payload[i] = results[i]
+        payload[str(i)] = results[i]
     print(payload)
     results = shuffle_handler(json.dumps(payload))
     return results
