@@ -18,6 +18,12 @@ functions:
                         - aws-sns
                         - aws-products-db
                         - aws-services-db
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-cfail:
@@ -28,6 +34,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-db:
@@ -43,6 +55,12 @@ functions:
                         - aws-secret-access-key
                         - aws-products-db
                         - aws-services-db
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-main:
@@ -53,6 +71,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-product-or-service:
@@ -63,6 +87,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-product-result:
@@ -73,6 +103,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-product-sentiment:
@@ -83,6 +119,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
@@ -96,6 +138,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
@@ -110,6 +158,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-service-sentiment:
@@ -123,6 +177,12 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-sfail:
@@ -133,6 +193,12 @@ functions:
                         com.openfaas.scale.max: 2000
                         com.openfaas.scale.min: 2000
                         com.openfaas.scale.target: 50
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-sentiment-sns:
@@ -147,6 +213,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-sns
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-sentiment-product-path:
@@ -160,6 +232,12 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-sentiment-read-pos-cfail:
@@ -174,6 +252,12 @@ functions:
                         - aws-access-key
                         - aws-secret-access-key
                         - aws-s3-partial
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-sentiment-service-path:
@@ -187,6 +271,12 @@ functions:
                 secrets:
                         - aws-access-key
                         - aws-secret-access-key
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-sentiment-sns-db:
@@ -203,6 +293,12 @@ functions:
                         - aws-sns
                         - aws-products-db
                         - aws-services-db
+                environment:
+                        read_timeout: "30m"
+                        write_timeout: "30m"
+                        exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
 configuration:

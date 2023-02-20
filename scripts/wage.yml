@@ -19,6 +19,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-avg:
@@ -33,6 +35,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-format:
@@ -47,6 +51,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-merit:
@@ -61,6 +67,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-stats:
@@ -79,6 +87,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-sum:
@@ -97,6 +107,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-validator:
@@ -111,6 +123,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-write-merit:
@@ -129,6 +143,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-wage-write-raw:
@@ -147,6 +163,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-wage-stats:
@@ -165,6 +183,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-wage-sum-avg-merit-write:
@@ -183,6 +203,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-wage-validator-format-write:
@@ -201,6 +223,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
 configuration:

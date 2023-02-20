@@ -85,7 +85,7 @@ def stats_handler(req):
             merit['statistics'][doc['role']] += doc['merit']
 
     fs = []
-    with ThreadPoolExecutor(max_workers=1000) as executor:
+    with ThreadPoolExecutor(max_workers=len(manifest["Contents"])) as executor:
         for obj in manifest["Contents"]:
             if obj["Key"] != "raw/":
                 fs.append(executor.submit(wage_sum_handler, json.dumps({'total': total, 'base': base, 'merit': merit, 'operator': obj["Key"]})))

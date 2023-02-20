@@ -19,6 +19,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -38,6 +40,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -57,6 +61,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -76,6 +82,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-video-shuffle:
@@ -94,6 +102,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-video-split:
@@ -112,6 +122,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-video-classify:
@@ -130,6 +142,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -149,6 +163,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
 configuration:

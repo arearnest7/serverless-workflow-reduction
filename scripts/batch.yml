@@ -19,6 +19,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-batch-checksum:
@@ -37,6 +39,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-batch-encrypt:
@@ -55,6 +59,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-batch-main:
@@ -69,6 +75,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         original-batch-zip:
@@ -87,6 +95,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-checksum:
@@ -105,6 +115,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-encrypt:
@@ -123,6 +135,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-main:
@@ -137,6 +151,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-zip:
@@ -155,6 +171,8 @@ functions:
                         read_timeout: "30m"
                         write_timeout: "30m"
                         exec_timeout: "30m"
+                        max_inflight: 10000000
+                        sleep_duration: "30m"
                 build_args:
                         TEST_ENABLED: false
 configuration:
