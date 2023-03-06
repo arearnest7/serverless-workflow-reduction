@@ -1,27 +1,29 @@
 import requests
 import json
-import boto3
 import pprint
 import csv
 import os
+import sys
+from pymongo import MongoClient
+from urllib.parse import quote_plus
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-sns", "r") as f:
-    AWS_SNS=f.read()
-with open("/var/openfaas/secrets/aws-products-db", "r") as f:
-    AWS_Products_DB=f.read()
-with open("/var/openfaas/secrets/aws-services-db", "r") as f:
-    AWS_Services_DB=f.read()
 
 #initialize
 pp = pprint.PrettyPrinter(indent=4)
-s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
-client = boto3.client('comprehend', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+
+with open("/var/openfaas/secrets/mongo-db-password") as f:
+    password = f.read()
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def db_handler(req):
     '''
@@ -30,25 +32,42 @@ def db_handler(req):
     
     event = req
     #select correct table based on input data
-    dynamodb = boto3.client('dynamodb', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
-    if event['reviewType'] == 'Product':
-        tableName = AWS_Products_DB
-    elif event['reviewType'] == 'Service':
-        tableName = AWS_Services_DB
-    else:
-        raise Exception("Input review is neither Product nor Service")
+    #dynamodb = boto3.client('dynamodb', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+    #if event['reviewType'] == 'Product':
+    #    tableName = AWS_Products_DB
+    #elif event['reviewType'] == 'Service':
+    #    tableName = AWS_Services_DB
+    #else:
+    #    raise Exception("Input review is neither Product nor Service")
     
     #construct response to put data in table
-    response = dynamodb.put_item(
-        TableName=tableName,
-        Item={
-            'reviewID': {"N": event['reviewID'] },
-            'customerID': {"N": event['customerID'] },
-            'productID': {"N": event['productID'] },
-            'feedback': {"S": event['feedback'] },
-            'sentiment': {"S": event['sentiment'] }
-        },
-    )
+    #response = dynamodb.put_item(
+    #    TableName=tableName,
+    #    Item={
+    #        'reviewID': {"N": event['reviewID'] },
+    #        'customerID': {"N": event['customerID'] },
+    #        'productID': {"N": event['productID'] },
+    #        'feedback': {"S": event['feedback'] },
+    #        'sentiment': {"S": event['sentiment'] }
+    #    },
+    #)
+    client = MongoClient("mongodb://%s:%s@%s" % (quote_plus("root"), quote_plus(password), os.getenv("mongo_host")))
+    db = client['openfaas']
+    table = ""
+    if event['reviewType'] == 'Product':
+        table = db.products
+    elif event['reviewType'] == 'Service':
+        table = db.services
+    else:
+        raise Exception("Input review is neither Product nor Service")
+    Item = {
+       'reviewID': event['reviewID'],
+        'customerID': event['customerID'],
+        'productID': event['productID'],
+        'feedback': event['feedback'],
+        'sentiment': event['sentiment']
+    }
+    response = {"response": table.insert_one(Item).inserted_id}
     
     #pass through values 
     response['reviewType'] = event['reviewType']
@@ -76,13 +95,19 @@ def sns_handler(req):
     '''
     
     #construct message from input data and publish via SNS
-    sns = boto3.client('sns', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
-    sns.publish(
+    #sns = boto3.client('sns', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+    #sns.publish(
+    #    TopicArn = AWS_SNS,
+    #    Subject = 'Negative Review Received',
+    #    Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']), 
+    #    event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
+    #)
+    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/shasum' , data = json.dumps({
         TopicArn = AWS_SNS,
         Subject = 'Negative Review Received',
-        Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']), 
-                    event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
-    )
+        Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']),
+        event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])   
+    }))
     
     #pass through values
     return db_handler({
@@ -145,7 +170,14 @@ def product_sentiment_handler(req):
     
     #use comprehend to perform sentiment analysis
     feedback = event['feedback']
-    sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+    #sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+    response = json.loads(requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/sentimentanalysis' , data = feedback))
+    if response['polarity'] > 0.5:
+        sentiment = "POSITIVE"
+    elif response['polarity'] < -0.5:
+        sentiment = "NEGATIVE"
+    else:
+        sentiment = "NEUTRAL"
     
     #pass through values
     return product_result_handler({
@@ -164,7 +196,13 @@ def service_sentiment_handler(req):
     '''
     #use comprehend to perform sentiment analysis
     feedback = event['feedback']
-    sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+    uploaded = False
+    while not uploaded:
+        try:
+            sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+            uploaded = True
+        except:
+            print("waiting for ability to upload")
     
     #pass through values
     return service_result_handler({
@@ -200,19 +238,21 @@ def read_csv_handler(req):
     
     #Fallback tests for initializations outside scope
     event = req
-    try:
-        s3
-    except NameError:
-        s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+    #try:
+    #    s3
+    #except NameError:
+    #    s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
     
     
     #read s3 object
     bucket_name = event['bucket_name']
     file_key = event['file_key']
-    response = s3.get_object(Bucket=bucket_name, Key=file_key)
+    #response = s3.get_object(Bucket=bucket_name, Key=file_key)
+    response = redisClient.get(file_key)
     
     #convert response to lines of CSV
-    lines = response['Body'].read().decode('utf-8').split('\n')
+    #lines = response['Body'].read().decode('utf-8').split('\n')
+    lines = response.decode('utf-8').split('\n')
     
     #DictReader -> convert lines of CSV to OrderedDict
     for row in csv.DictReader(lines):

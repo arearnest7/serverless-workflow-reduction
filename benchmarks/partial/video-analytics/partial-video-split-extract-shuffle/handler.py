@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 import os
 import json
-import boto3
-from boto3.s3.transfer import TransferConfig
 import subprocess
 import re
 import time
 import requests
 from urllib.parse import unquote_plus
 from concurrent.futures import ThreadPoolExecutor
+import redis
 
 FFMPEG_STATIC = "function/var/ffmpeg"
 
@@ -17,12 +16,6 @@ re_length = re.compile(length_regexp)
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-partial", "r") as f:
-    AWS_S3_Partial=f.read()
 
 def shuffle_handler(req):
     event = json.loads(req)
@@ -122,7 +115,9 @@ def extract_handler(req):
 
         count = count + 1
 
-        s3_client.download_fileobj(bucket_name, key , f, Config=config)
+        #s3_client.download_fileobj(bucket_name, key , f, Config=config)
+        data = redisClient.get(key)
+        f.write(data)
         f.close()
         millis = int(round(time.time() * 1000))
         extract_millis.append(millis)
@@ -130,9 +125,15 @@ def extract_handler(req):
         frame_name = key.replace("Video_Chunks_Step/","").replace("min", "frame").replace(".mp4","_" + str(millis) + ".jpg")
         subprocess.call([FFMPEG_STATIC, '-i', filename, '-frames:v', "1" , "-q:v","1", '/tmp/'+frame_name])
         try:
-            s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            #s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            with open("/tmp/"+frame_name, "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Frames_Step/"+frame_name, data)
         except:
-            s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            #s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            with open("function/var/Frame_1.jpg", "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Frames_Step/"+frame_name, data)
     print("Done!") 
 
     obj= {
@@ -152,27 +153,29 @@ def extract_handler(req):
 def handle(req):
     event = json.loads(req)
     if('dummy' in event) and (event['dummy'] == 1):
-         print(AWS_AccessKey)
-         print(AWS_SecretAccessKey)
-         print(bucketName) 
+         #print(AWS_AccessKey)
+         #print(AWS_SecretAccessKey)
+         #print(bucketName) 
          print("Dummy call, doing nothing")
          return
 
     #print(subprocess.call([FFMPEG_STATIC]))
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    bucket_name = AWS_S3_Partial
-    config = TransferConfig(use_threads=False)
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #bucket_name = AWS_S3_Partial
+    #config = TransferConfig(use_threads=False)
     filename = "/tmp/src.mp4"
     f = open(filename, "wb")
     print(event)
     src_video=event['src_name']
     DOP=int(event['DOP'])
     detect_prob=int(event['detect_prob'])
-    s3_client.download_fileobj(bucket_name, "Video_Src/min_"+src_video+".mp4" , f, Config=config)
+    #s3_client.download_fileobj(bucket_name, "Video_Src/min_"+src_video+".mp4" , f, Config=config)
+    data = redisClient.get("Video_Src/min_"+src_video+".mp4")
+    f.write(data)
     f.close()
 
     output = subprocess.Popen(FFMPEG_STATIC + " -i '"+filename+"' 2>&1 | grep 'Duration'",
@@ -201,7 +204,10 @@ def handle(req):
               
             count=count+1
             start=start+chunk_size
-            s3_client.upload_file("/tmp/" + chunk_video_name, bucket_name, "Video_Chunks_Step/"+chunk_video_name, Config=config)
+            #s3_client.upload_file("/tmp/" + chunk_video_name, bucket_name, "Video_Chunks_Step/"+chunk_video_name, Config=config)
+            with open("/tmp/" + chunk_video_name, "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Chunks_Step/"+chunk_video_name, data)
     print("Done!") 
 
     payload=count/DOP

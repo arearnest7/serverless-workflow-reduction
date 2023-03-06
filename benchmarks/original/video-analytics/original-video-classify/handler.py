@@ -3,21 +3,23 @@ from imageai.Detection import ObjectDetection
 from multiprocessing import Process, Manager
 import multiprocessing
 import time
-import boto3
-from boto3.s3.transfer import TransferConfig
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageFile
 import zipfile
 import os
 import json
+import redis
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-original", "r") as f:
-    AWS_S3_Original=f.read()
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def delete_tmp():
     for root, dirs, files in os.walk("/tmp/", topdown=False):
@@ -32,13 +34,13 @@ def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob
 
     start_time = int(round(time.time() * 1000))
 
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    config = TransferConfig(use_threads=False)
-    bucket_name = AWS_S3_Original
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #config = TransferConfig(use_threads=False)
+    #bucket_name = AWS_S3_Original
  
     worker_dir = "/tmp/" + "Worker_" + str(index)
     if not os.path.exists(worker_dir):
@@ -47,7 +49,9 @@ def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob
     filename = worker_dir + "/image_" + str(index) + ".jpg"
     f = open(filename, "wb")
     key = image
-    s3_client.download_fileobj(bucket_name, key , f, Config=config)
+    #s3_client.download_fileobj(bucket_name, key , f, Config=config)
+    data = redisClient.get(key)
+    f.write(data)
     f.close()
     print("Download duration: " + str(time.time() * 1000 - start_time))
     #input_path = "~/images/input_fast.jpg"
@@ -88,18 +92,20 @@ def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob
     
     for f in os.listdir(worker_dir):
         myzip.write(worker_dir + "/" + f) 
-    
-    s3_client.upload_file("/tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
+    #s3_client.upload_file("/tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
+    with open("/tmp/" + zipFileName, "rb") as f:
+        data = f.read()
+        redisClient.set("Detected_Objects/" + zipFileName, data)
     print("file uploaded " + zipFileName) 	
 
 def crop_and_sharpen(original_image, t, detection ,start_index, end_index, worker_dir):
     for box in range(start_index, end_index):
-            im_temp = original_image.crop((detection[box]['box_points'][0], detection[box]['box_points'][1], detection[box]['box_points'][2], detection[box]['box_points'][3]))
-            im_resized = im_temp.resize((1408, 1408))
-            im_resized_sharpened =  im_resized.filter(ImageFilter.SHARPEN)
-            fileName = worker_dir + "/" + detection[box]['name']  + "_" + str(box) + "_" + str(t) + "_" + ".jpg"
-            im_resized_sharpened.save(fileName)
-            #im_temp.save(fileName)
+        im_temp = original_image.crop((detection[box]['box_points'][0], detection[box]['box_points'][1], detection[box]['box_points'][2], detection[box]['box_points'][3]))
+        im_resized = im_temp.resize((1408, 1408))
+        im_resized_sharpened =  im_resized.filter(ImageFilter.SHARPEN)
+        fileName = worker_dir + "/" + detection[box]['name']  + "_" + str(box) + "_" + str(t) + "_" + ".jpg"
+        im_resized_sharpened.save(fileName)
+        #im_temp.save(fileName)
 
     #print(detection) 
     print(len(detection))
@@ -111,14 +117,14 @@ def handle(req):
         return
     start_time = int(round(time.time() * 1000))
     
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
     #config = TransferConfig(use_threads=False)
     print(event)
-    bucket_name = AWS_S3_Original
+    #bucket_name = AWS_S3_Original
 
     list_of_chunks = event['values']
     #list_of_images = event['images']

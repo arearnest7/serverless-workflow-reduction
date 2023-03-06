@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import os
 import json
-import boto3
-from boto3.s3.transfer import TransferConfig
 import subprocess
 import re
 import time
 import requests
 from concurrent.futures import ThreadPoolExecutor
+import redis
 
 FFMPEG_STATIC = "function/var/ffmpeg"
 
@@ -16,37 +15,43 @@ re_length = re.compile(length_regexp)
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-original", "r") as f:
-    AWS_S3_Original=f.read()
+
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def handle(req):
     event = json.loads(req)
     if('dummy' in event) and (event['dummy'] == 1):
-        print(accessKeyId)
-        print(accessKey)
-        print(bucketName) 
+        #print(accessKeyId)
+        #print(accessKey)
+        #print(bucketName) 
         print("Dummy call, doing nothing")
         return
 
     #print(subprocess.call([FFMPEG_STATIC]))
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    bucket_name = AWS_S3_Original
-    config = TransferConfig(use_threads=False)
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #bucket_name = AWS_S3_Original
+    #config = TransferConfig(use_threads=False)
     filename = "/tmp/src.mp4"
     f = open(filename, "wb")
     print(event)
     src_video=event['src_name']
     DOP=int(event['DOP'])
     detect_prob=int(event['detect_prob'])
-    s3_client.download_fileobj(bucket_name, "Video_Src/min_"+src_video+".mp4" , f, Config=config)
+    #s3_client.download_fileobj(bucket_name, "Video_Src/min_"+src_video+".mp4" , f, Config=config)
+    data = redisClient.get("Video_Src/min_"+src_video+".mp4")
+    f.write(data)
     f.close()
 
     output = subprocess.Popen(FFMPEG_STATIC + " -i '"+filename+"' 2>&1 | grep 'Duration'",
@@ -75,7 +80,10 @@ def handle(req):
               
             count=count+1
             start=start+chunk_size
-            s3_client.upload_file("/tmp/" + chunk_video_name, bucket_name, "Video_Chunks_Step/"+chunk_video_name, Config=config)
+            #s3_client.upload_file("/tmp/" + chunk_video_name, bucket_name, "Video_Chunks_Step/"+chunk_video_name, Config=config)
+            with open("/tmp/" + chunk_video_name, "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Chunks_Step/"+chunk_video_name, data)
     print("Done!") 
 
     payload=count/DOP

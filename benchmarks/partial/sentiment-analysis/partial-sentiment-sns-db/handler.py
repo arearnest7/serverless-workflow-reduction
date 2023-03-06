@@ -1,19 +1,15 @@
 import requests
 import json
-import boto3
+import os
+import sys
+from pymongo import MongoClient
+from urllib.parse import quote_plus
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-sns", "r") as f:
-    AWS_SNS=f.read()
-with open("/var/openfaas/secrets/aws-products-db", "r") as f:
-    AWS_Products_DB=f.read()
-with open("/var/openfaas/secrets/aws-services-db", "r") as f:
-    AWS_Services_DB=f.read()
+
+with open("/var/openfaas/secrets/mongo-db-password") as f:
+    password = f.read()
 
 def sfail_handler(req):
     """handle a request to the function
@@ -30,25 +26,42 @@ def db_handler(req):
     
     event = req
     #select correct table based on input data
-    dynamodb = boto3.client('dynamodb', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+    #dynamodb = boto3.client('dynamodb', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+    #if event['reviewType'] == 'Product':
+    #    tableName = AWS_Products_DB
+    #elif event['reviewType'] == 'Service':
+    #    tableName = AWS_Services_DB
+    #else:
+    #    raise Exception("Input review is neither Product nor Service")
+
+    #construct response to put data in table
+    #response = dynamodb.put_item(
+    #    TableName=tableName,
+    #    Item={
+    #        'reviewID': {"N": event['reviewID'] },
+    #        'customerID': {"N": event['customerID'] },
+    #        'productID': {"N": event['productID'] },
+    #        'feedback': {"S": event['feedback'] },
+    #        'sentiment': {"S": event['sentiment'] }
+    #    },
+    #)
+    client = MongoClient("mongodb://%s:%s@%s" % (quote_plus("root"), quote_plus(password), os.getenv("mongo_host")))
+    db = client['openfaas']
+    table = ""
     if event['reviewType'] == 'Product':
-        tableName = AWS_Products_DB
+        table = db.products
     elif event['reviewType'] == 'Service':
-        tableName = AWS_Services_DB
+        table = db.services
     else:
         raise Exception("Input review is neither Product nor Service")
-    
-    #construct response to put data in table
-    response = dynamodb.put_item(
-        TableName=tableName,
-        Item={
-            'reviewID': {"N": event['reviewID'] },
-            'customerID': {"N": event['customerID'] },
-            'productID': {"N": event['productID'] },
-            'feedback': {"S": event['feedback'] },
-            'sentiment': {"S": event['sentiment'] }
-        },
-    )
+    Item = {
+       'reviewID': event['reviewID'],
+        'customerID': event['customerID'],
+        'productID': event['productID'],
+        'feedback': event['feedback'],
+        'sentiment': event['sentiment']
+    }
+    response = {"response": table.insert_one(Item).inserted_id}
     
     #pass through values 
     response['reviewType'] = event['reviewType']
@@ -67,13 +80,12 @@ def sns_handler(req):
     '''
     
     #construct message from input data and publish via SNS
-    sns = boto3.client('sns', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
-    sns.publish(
+    response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/shasum' , data = json.dumps({
         TopicArn = AWS_SNS,
         Subject = 'Negative Review Received',
-        Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']), 
-                    event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
-    )
+        Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']),
+        event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
+    }))
     
     #pass through values
     return db_handler({

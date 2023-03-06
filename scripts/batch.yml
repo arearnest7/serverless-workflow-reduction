@@ -8,19 +8,19 @@ functions:
                 handler: ../benchmarks/full/pipelined-batch-processing/full-batch-full
                 image: arearnest7/full-batch-full:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-full
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-batch-checksum:
@@ -28,19 +28,19 @@ functions:
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-checksum
                 image: arearnest7/original-batch-checksum:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-batch-encrypt:
@@ -48,19 +48,19 @@ functions:
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-encrypt
                 image: arearnest7/original-batch-encrypt:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-batch-main:
@@ -68,15 +68,15 @@ functions:
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-main
                 image: arearnest7/original-batch-main:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
                 build_args:
                         TEST_ENABLED: false
         original-batch-zip:
@@ -84,19 +84,19 @@ functions:
                 handler: ../benchmarks/original/pipelined-batch-processing/original-batch-zip
                 image: arearnest7/original-batch-zip:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-checksum:
@@ -104,19 +104,19 @@ functions:
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-checksum
                 image: arearnest7/partial-batch-partial-checksum:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-encrypt:
@@ -124,19 +124,19 @@ functions:
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-encrypt
                 image: arearnest7/partial-batch-partial-encrypt:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-main:
@@ -144,15 +144,15 @@ functions:
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-main
                 image: arearnest7/partial-batch-partial-main:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
                 build_args:
                         TEST_ENABLED: false
         partial-batch-partial-zip:
@@ -160,19 +160,19 @@ functions:
                 handler: ../benchmarks/partial/pipelined-batch-processing/partial-batch-partial-zip
                 image: arearnest7/partial-batch-partial-zip:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
 configuration:

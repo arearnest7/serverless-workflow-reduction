@@ -1,16 +1,10 @@
 import requests
-import os, boto3
+import os
 import json
 
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-
-client = boto3.client('comprehend', region_name='us-west-2', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
 
 def handle(req):
     event = json.loads(req)
@@ -20,7 +14,14 @@ def handle(req):
     
     #use comprehend to perform sentiment analysis
     feedback = event['feedback']
-    sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+    #sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+    response = json.loads(requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/sentimentanalysis' , data = feedback))
+    if response['polarity'] > 0.5:
+        sentiment = "POSITIVE"
+    elif response['polarity'] < -0.5:
+        sentiment = "NEGATIVE"
+    else:
+        sentiment = "NEUTRAL"
     
     #pass through values
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/original-sentiment-service-result' , data = json.dumps({

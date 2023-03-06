@@ -7,6 +7,6 @@ h5py==2.10.0
 matplotlib==3.3.2
 opencv-python
 keras-resnet==0.2.0
-boto3
-requests
 imageai==2.1.6
+requests
+redis

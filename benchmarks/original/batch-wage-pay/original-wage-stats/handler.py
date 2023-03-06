@@ -1,19 +1,21 @@
-import boto3
 import requests
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor
+import redis
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-original", "r") as f:
-    AWS_S3_Original=f.read()
 
-s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def handle(req):
     manifest = s3.list_objects(Bucket=AWS_S3_Original, Prefix="raw/")
@@ -22,16 +24,16 @@ def handle(req):
     base = {'statistics': {'staff': 0, 'teamleader': 0, 'manager': 0}}
     merit = {'statistics': {'staff': 0, 'teamleader': 0, 'manager': 0}}
 
-    for obj in manifest["Contents"]:
-        if obj["Key"] != "raw/":
-            s3.download_file(AWS_S3_Original, obj["Key"], "/tmp/temp")
-            doc = {}
-            with open("/tmp/temp", "r") as f:
-                doc = json.load(f)
-                total['statistics']['total'] += doc['total']
-                total['statistics'][doc['role']+'-number'] += 1
-                base['statistics'][doc['role']] += doc['base']
-                merit['statistics'][doc['role']] += doc['merit']
+    for obj in redisClient.scan_iter("raw-*"):
+        #s3.download_file(AWS_S3_Original, obj["Key"], "/tmp/temp")
+        #doc = {}
+        #with open("/tmp/temp", "r") as f:
+        #    doc = json.load(f)
+        doc = json.loads(redisClient.get(key))
+        total['statistics']['total'] += doc['total']
+        total['statistics'][doc['role']+'-number'] += 1
+        base['statistics'][doc['role']] += doc['base']
+        merit['statistics'][doc['role']] += doc['merit']
 
     fs = []
     with ThreadPoolExecutor(max_workers=len(manifest["Contents"])) as executor:

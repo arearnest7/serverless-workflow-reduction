@@ -1,30 +1,33 @@
-import boto3
 import requests
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor
+import redis
 
 TAX = 0.0387
 INSURANCE = 1500
 ROLES = ['staff', 'teamleader', 'manager']
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-full", "r") as f:
-    AWS_S3_Full=f.read()
 
-s3 = boto3.client('s3', aws_access_key_id=AWS_AccessKey, aws_secret_access_key=AWS_SecretAccessKey)
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def write_merit_handler(req):
     params = json.loads(req)
 
-    with open("/tmp/temp", "w") as f:
-        f.write(req)
-    f.close()
-    s3.upload_file("/tmp/temp", AWS_S3_Full, "merit/" + str(params["id"]))
+    #with open("/tmp/temp", "w") as f:
+    #    f.write(req)
+    #f.close()
+    #s3.upload_file("/tmp/temp", AWS_S3_Full, "merit/" + str(params["id"]))
+    redisClient.set("merit-" + str(params["id"]), req)
 
     return str(params["id"]) + " statistics uploaded/updated"
 
@@ -56,33 +59,32 @@ def wage_avg_handler(req):
 
 def wage_sum_handler(req):
     params = json.loads(req)
-    s3.download_file(AWS_S3_Full, params["operator"], "/tmp/temp")
-    with open("/tmp/temp", "r") as f:
-        temp = json.load(f)
-        params["operator"] = temp["operator"]
-        params["id"] = temp["id"]
+    #s3.download_file(AWS_S3_Full, params["operator"], "/tmp/temp")
+    temp = json.loads(redisClient.get(params["operator"]))
+    params["operator"] = temp["operator"]
+    params["id"] = temp["id"]
     stats = {'total': params['total']['statistics']['total'] }
     params['statistics'] = stats
 
     return wage_avg_handler(json.dumps(params))
 
 def stats_handler(req):
-    manifest = s3.list_objects(Bucket=AWS_S3_Full, Prefix="raw/")
+    #manifest = s3.list_objects(Bucket=AWS_S3_Full, Prefix="raw/")
 
     total = {'statistics': {'total': 0, 'staff-number': 0, 'teamleader-number': 0, 'manager-number': 0}}
     base = {'statistics': {'staff': 0, 'teamleader': 0, 'manager': 0}}
     merit = {'statistics': {'staff': 0, 'teamleader': 0, 'manager': 0}}
 
-    for obj in manifest["Contents"]:
-        if obj["Key"] != "raw/":
-            s3.download_file(AWS_S3_Full, obj["Key"], "/tmp/temp")
-            doc = {}
-            with open("/tmp/temp", "r") as f:
-                doc = json.load(f)
-            total['statistics']['total'] += doc['total']
-            total['statistics'][doc['role']+'-number'] += 1
-            base['statistics'][doc['role']] += doc['base']
-            merit['statistics'][doc['role']] += doc['merit']
+    for key in redisClient.scan_iter("raw-*"):
+        #s3.download_file(AWS_S3_Full, obj["Key"], "/tmp/temp")
+        #doc = {}
+        #with open("/tmp/temp", "r") as f:
+        #    doc = json.load(f)
+        doc = json.loads(redisClient.get(key))
+        total['statistics']['total'] += doc['total']
+        total['statistics'][doc['role']+'-number'] += 1
+        base['statistics'][doc['role']] += doc['base']
+        merit['statistics'][doc['role']] += doc['merit']
 
     fs = []
     with ThreadPoolExecutor(max_workers=len(manifest["Contents"])) as executor:
@@ -94,10 +96,11 @@ def stats_handler(req):
 
 def write_raw_handler(req):
     params = json.loads(req)
-    with open("/tmp/temp", "w") as f:
-        f.write(req)
-    f.close()
-    s3.upload_file("/tmp/temp", AWS_S3_Full, "raw/" + str(params["id"]))
+    #with open("/tmp/temp", "w") as f:
+    #    f.write(req)
+    #f.close()
+    #s3.upload_file("/tmp/temp", AWS_S3_Full, "raw/" + str(params["id"]))
+    redisClient.set("raw-" + str(params["id"]), req)
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/full-wage-full', data = json.dumps(req))
     return response.text
 

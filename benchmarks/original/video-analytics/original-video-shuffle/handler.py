@@ -2,6 +2,7 @@ import requests
 import json
 import random
 from concurrent.futures import ThreadPoolExecutor
+import redis
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"

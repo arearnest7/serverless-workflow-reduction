@@ -8,19 +8,19 @@ functions:
                 handler: ../benchmarks/full/video-analytics/full-video-full
                 image: arearnest7/full-video-full:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-full
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -29,19 +29,19 @@ functions:
                 handler: ../benchmarks/full/video-analytics-throttle/full-video-full-throttle
                 image: arearnest7/full-video-full-throttle:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-full
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -50,19 +50,19 @@ functions:
                 handler: ../benchmarks/original/video-analytics/original-video-classify
                 image: arearnest7/original-video-classify:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -71,19 +71,19 @@ functions:
                 handler: ../benchmarks/original/video-analytics/original-video-extract
                 image: arearnest7/original-video-extract:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-video-shuffle:
@@ -91,19 +91,19 @@ functions:
                 handler: ../benchmarks/original/video-analytics/original-video-shuffle
                 image: arearnest7/original-video-shuffle:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-video-split:
@@ -111,19 +111,19 @@ functions:
                 handler: ../benchmarks/original/video-analytics/original-video-split
                 image: arearnest7/original-video-split:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-video-classify:
@@ -131,19 +131,19 @@ functions:
                 handler: ../benchmarks/partial/video-analytics/partial-video-classify
                 image: arearnest7/partial-video-classify:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
                         ADDITIONAL_PACKAGE: "python-tk python3-tk tk-dev"
@@ -152,19 +152,19 @@ functions:
                 handler: ../benchmarks/partial/video-analytics/partial-video-split-extract-shuffle
                 image: arearnest7/partial-video-split-extract-shuffle:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
 configuration:

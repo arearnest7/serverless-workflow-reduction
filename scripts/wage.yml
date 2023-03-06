@@ -8,19 +8,19 @@ functions:
                 handler: ../benchmarks/full/batch-wage-pay/full-wage-full
                 image: arearnest7/full-wage-full:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-full
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-wage-avg:
@@ -28,15 +28,15 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-avg
                 image: arearnest7/original-wage-avg:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
                 build_args:
                         TEST_ENABLED: false
         original-wage-format:
@@ -44,15 +44,15 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-format
                 image: arearnest7/original-wage-format:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
                 build_args:
                         TEST_ENABLED: false
         original-wage-merit:
@@ -60,15 +60,15 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-merit
                 image: arearnest7/original-wage-merit:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
                 build_args:
                         TEST_ENABLED: false
         original-wage-stats:
@@ -76,19 +76,19 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-stats
                 image: arearnest7/original-wage-stats:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-wage-sum:
@@ -96,19 +96,19 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-sum
                 image: arearnest7/original-wage-sum:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-wage-validator:
@@ -116,15 +116,15 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-validator
                 image: arearnest7/original-wage-validator:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
                 build_args:
                         TEST_ENABLED: false
         original-wage-write-merit:
@@ -132,19 +132,19 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-write-merit
                 image: arearnest7/original-wage-write-merit:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         original-wage-write-raw:
@@ -152,19 +152,19 @@ functions:
                 handler: ../benchmarks/original/batch-wage-pay/original-wage-write-raw
                 image: arearnest7/original-wage-write-raw:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-original
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-wage-stats:
@@ -172,19 +172,19 @@ functions:
                 handler: ../benchmarks/partial/batch-wage-pay/partial-wage-stats
                 image: arearnest7/partial-wage-stats:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-wage-sum-avg-merit-write:
@@ -192,19 +192,19 @@ functions:
                 handler: ../benchmarks/partial/batch-wage-pay/partial-wage-sum-avg-merit-write
                 image: arearnest7/partial-wage-sum-avg-merit-write:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
         partial-wage-validator-format-write:
@@ -212,19 +212,19 @@ functions:
                 handler: ../benchmarks/partial/batch-wage-pay/partial-wage-validator-format-write
                 image: arearnest7/partial-wage-validator-format-write:latest
                 labels:
-                        com.openfaas.scale.max: 2000
-                        com.openfaas.scale.min: 2000
-                        com.openfaas.scale.target: 50
+                        com.openfaas.scale.max: 5
+                        com.openfaas.scale.min: 5
+                        com.openfaas.scale.target: 20
                 secrets:
-                        - aws-access-key
-                        - aws-secret-access-key
-                        - aws-s3-partial
+                        - redis-password
                 environment:
-                        read_timeout: "30m"
-                        write_timeout: "30m"
-                        exec_timeout: "30m"
+                        read_timeout: "48h"
+                        write_timeout: "48h"
+                        exec_timeout: "48h"
                         max_inflight: 10000000
-                        sleep_duration: "30m"
+                        sleep_duration: "48h"
+                        redis_hostname: "redis-master.redis.svc.cluster.local"
+                        redis_port: 6379
                 build_args:
                         TEST_ENABLED: false
 configuration:

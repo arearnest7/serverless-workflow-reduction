@@ -2,22 +2,25 @@
 import os
 from urllib.parse import unquote_plus
 import json
-import boto3
-from boto3.s3.transfer import TransferConfig
 import subprocess
 import re
 import time
+import redis
 
 FFMPEG_STATIC = "function/var/ffmpeg"
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-original", "r") as f:
-    AWS_S3_Original=f.read()
+
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def handle(req):
     event = json.loads(req)
@@ -26,13 +29,13 @@ def handle(req):
         return {"Extract Got Dummy" : "Dummy call, doing nothing"}
 
     #print(subprocess.call([FFMPEG_STATIC]))
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    config = TransferConfig(use_threads=False)
-    bucket_name = AWS_S3_Original
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #config = TransferConfig(use_threads=False)
+    #bucket_name = AWS_S3_Original
     print(event)
     list_of_chunks = event['values']
     src_video = event['source_id']
@@ -49,7 +52,9 @@ def handle(req):
 
         count = count + 1
 
-        s3_client.download_fileobj(bucket_name, key , f, Config=config)
+        #s3_client.download_fileobj(bucket_name, key , f, Config=config)
+        data = redisClient.get(key)
+        f.write(data)
         f.close()
         millis = int(round(time.time() * 1000))
         extract_millis.append(millis)
@@ -57,9 +62,15 @@ def handle(req):
         frame_name = key.replace("Video_Chunks_Step/","").replace("min", "frame").replace(".mp4","_" + str(millis) + ".jpg")
         subprocess.call([FFMPEG_STATIC, '-i', filename, '-frames:v', "1" , "-q:v","1", '/tmp/'+frame_name])
         try:
-            s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            #s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            with open("/tmp/"+frame_name, "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Frames_Step/"+frame_name, data)
         except:
-            s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            #s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            with open("function/var/Frame_1.jpg", "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Frames_Step/"+frame_name, data)
     print("Done!") 
 
     obj= {

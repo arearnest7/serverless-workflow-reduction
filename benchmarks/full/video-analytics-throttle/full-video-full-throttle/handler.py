@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import os
 import json
-import boto3
-from boto3.s3.transfer import TransferConfig
 import subprocess
 import re
 import time
@@ -16,6 +14,7 @@ import multiprocessing
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageFile
 import zipfile
 from concurrent.futures import ThreadPoolExecutor
+import redis
 
 FFMPEG_STATIC = "function/var/ffmpeg"
 
@@ -24,12 +23,15 @@ re_length = re.compile(length_regexp)
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-with open("/var/openfaas/secrets/aws-access-key", "r") as f:
-    AWS_AccessKey=f.read()
-with open("/var/openfaas/secrets/aws-secret-access-key", "r") as f:
-    AWS_SecretAccessKey=f.read()
-with open("/var/openfaas/secrets/aws-s3-full", "r") as f:
-    AWS_S3_Full=f.read()
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def delete_tmp():
     for root, dirs, files in os.walk("./tmp/", topdown=False):
@@ -44,13 +46,13 @@ def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob
 
     start_time = int(round(time.time() * 1000))
 
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    config = TransferConfig(use_threads=False)
-    bucket_name = AWS_S3_Full
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #config = TransferConfig(use_threads=False)
+    #bucket_name = AWS_S3_Full
 
     worker_dir = "/tmp/" + "Worker_" + str(index)
     if not os.path.exists(worker_dir):
@@ -59,7 +61,9 @@ def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob
     filename = worker_dir + "/image_" + str(index) + ".jpg"
     f = open(filename, "wb")
     key = image
-    s3_client.download_fileobj(bucket_name, key , f, Config=config)
+    #s3_client.download_fileobj(bucket_name, key , f, Config=config)
+    data = redisClient.get(key)
+    f.write(data)
     f.close()
     print("Download duration: " + str(time.time() * 1000 - start_time))
     #input_path = "~/images/input_fast.jpg"
@@ -100,18 +104,20 @@ def detect_object(index, index2, image, src_video, milli_1, milli_2, detect_prob
 
     for f in os.listdir(worker_dir):
         myzip.write(worker_dir + "/" + f)
-
-    s3_client.upload_file("/tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
+    #s3_client.upload_file("/tmp/" + zipFileName, bucket_name, "Detected_Objects/" + zipFileName, Config=config)
+    with open("/tmp/" + zipFileName, "rb") as f:
+        data = f.read()
+        redisClient.set("Detected_Objects/" + zipFileName, data)
     print("file uploaded " + zipFileName)
 
 def crop_and_sharpen(original_image, t, detection ,start_index, end_index, worker_dir):
     for box in range(start_index, end_index):
-            im_temp = original_image.crop((detection[box]['box_points'][0], detection[box]['box_points'][1], detection[box]['box_points'][2], detection[box]['box_points'][3]))
-            im_resized = im_temp.resize((1408, 1408))
-            im_resized_sharpened =  im_resized.filter(ImageFilter.SHARPEN)
-            fileName = worker_dir + "/" + detection[box]['name']  + "_" + str(box) + "_" + str(t) + "_" + ".jpg"
-            im_resized_sharpened.save(fileName)
-            #im_temp.save(fileName)
+        im_temp = original_image.crop((detection[box]['box_points'][0], detection[box]['box_points'][1], detection[box]['box_points'][2], detection[box]['box_points'][3]))
+        im_resized = im_temp.resize((1408, 1408))
+        im_resized_sharpened =  im_resized.filter(ImageFilter.SHARPEN)
+        fileName = worker_dir + "/" + detection[box]['name']  + "_" + str(box) + "_" + str(t) + "_" + ".jpg"
+        im_resized_sharpened.save(fileName)
+        #im_temp.save(fileName)
 
     #print(detection) 
     print(len(detection))
@@ -123,14 +129,14 @@ def classify_handler(req):
         return
     start_time = int(round(time.time() * 1000))
 
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
     #config = TransferConfig(use_threads=False)
     print(event)
-    bucket_name = AWS_S3_Full
+    #bucket_name = AWS_S3_Full
 
     list_of_chunks = event['values']
     #list_of_images = event['images']
@@ -166,13 +172,13 @@ def extract_handler(req):
         return {"Extract Got Dummy" : "Dummy call, doing nothing"}
 
     #print(subprocess.call([FFMPEG_STATIC]))
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    config = TransferConfig(use_threads=False)
-    bucket_name = AWS_S3_Full
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #config = TransferConfig(use_threads=False)
+    #bucket_name = AWS_S3_Full
     print(event)
     list_of_chunks = event['values']
     src_video = event['source_id']
@@ -189,7 +195,9 @@ def extract_handler(req):
 
         count = count + 1
 
-        s3_client.download_fileobj(bucket_name, key , f, Config=config)
+        #s3_client.download_fileobj(bucket_name, key , f, Config=config)
+        data = redisClient.get(key)
+        f.write(data)
         f.close()
         millis = int(round(time.time() * 1000))
         extract_millis.append(millis)
@@ -197,10 +205,16 @@ def extract_handler(req):
         frame_name = key.replace("Video_Chunks_Step/","").replace("min", "frame").replace(".mp4","_" + str(millis) + ".jpg")
         subprocess.call([FFMPEG_STATIC, '-i', filename, '-frames:v', "1" , "-q:v","1", '/tmp/'+frame_name])
         try:
-            s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            #s3_client.upload_file("/tmp/"+frame_name, bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            with open("/tmp/"+frame_name, "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Frames_Step/"+frame_name, data)
         except:
-            s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
-            print("Done!")
+            #s3_client.upload_file("function/var/Frame_1.jpg", bucket_name, "Video_Frames_Step/"+frame_name, Config=config)
+            with open("function/var/Frame_1.jpg", "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Frames_Step/"+frame_name, data)
+        print("Done!")
 
     obj= {
         'statusCode': 200,
@@ -278,36 +292,37 @@ def shuffle_handler(req):
         m2=[]
 
     fs = []
-    with ThreadPoolExecutor(max_workers=len(returnedDic["detail"]["indeces"])) as executor:
-        for i in range(len(returnedDic["detail"]["indeces"])):
-            fs.append(executor.submit(classify_handler, json.dumps(returnedDic["detail"]["indeces"][i])))
+    for i in range(len(returnedDic["detail"]["indeces"])):
+        fs.append(classify_handler(json.dumps(returnedDic["detail"]["indeces"][i])))
     results = [f.result() for f in fs]
     return json.dumps(results)
 
 def handle(req):
     event = json.loads(req)
     if('dummy' in event) and (event['dummy'] == 1):
-        print(AWS_AccessKey)
-        print(AWS_SecretAccessKey)
-        print(AWS_S3_Full)
+        #print(AWS_AccessKey)
+        #print(AWS_SecretAccessKey)
+        #print(AWS_S3_Full)
         print("Dummy call, doing nothing")
         return
 
     #print(subprocess.call([FFMPEG_STATIC]))
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    bucket_name = AWS_S3_Full
-    config = TransferConfig(use_threads=False)
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #bucket_name = AWS_S3_Full
+    #config = TransferConfig(use_threads=False)
     filename = "/tmp/src.mp4"
     f = open(filename, "wb")
     print(event)
     src_video=event['src_name']
     DOP=int(event['DOP'])
     detect_prob=int(event['detect_prob'])
-    s3_client.download_fileobj(bucket_name, "Video_Src/min_"+src_video+".mp4" , f, Config=config)
+    #s3_client.download_fileobj(bucket_name, "Video_Src/min_"+src_video+".mp4" , f, Config=config)
+    data = redisClient.get("Video_Src/min_"+src_video+".mp4")
+    f.write(data)
     f.close()
 
     output = subprocess.Popen(FFMPEG_STATIC + " -i '"+filename+"' 2>&1 | grep 'Duration'",
@@ -336,7 +351,10 @@ def handle(req):
 
             count=count+1
             start=start+chunk_size
-            s3_client.upload_file("/tmp/" + chunk_video_name, bucket_name, "Video_Chunks_Step/"+chunk_video_name, Config=config)
+            #s3_client.upload_file("/tmp/" + chunk_video_name, bucket_name, "Video_Chunks_Step/"+chunk_video_name, Config=config)
+            with open("/tmp/" + chunk_video_name, "rb") as f:
+                data = f.read()
+                redisClient.set("Video_Chunks_Step/"+chunk_video_name, data)
     print("Done!")
 
     payload=count/DOP
