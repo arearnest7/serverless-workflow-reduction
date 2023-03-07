@@ -30,4 +30,6 @@ export REDIS_PASSWORD=$(sudo k3s kubectl get secret --namespace redis redis -o j
 kubectl port-forward --namespace redis svc/redis-master 6379:6379 &
 faas-cli secret create mongo-db-password --from-literal $MONGODB_ROOT_PASSWORD
 faas-cli secret create redis-password --from-literal $REDIS_PASSWORD
+faas-cli store deploy shasum
+faas-cli store deploy SentimentAnalysis
 python3 set-redis.py $REDIS_PASSWORD
