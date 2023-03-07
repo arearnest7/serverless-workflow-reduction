@@ -2,6 +2,7 @@ import requests
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor
+import os
 import redis
 
 TAX = 0.0387

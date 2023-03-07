@@ -1,6 +1,7 @@
 import requests
 import csv
 import json
+import os
 import redis
 
 #initialize

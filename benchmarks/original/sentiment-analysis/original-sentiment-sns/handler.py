@@ -19,9 +19,8 @@ def handle(req):
     #    event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
     #)
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/shasum' , data = json.dumps({
-        TopicArn = AWS_SNS,
-        Subject = 'Negative Review Received',
-        Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']),
+        "Subject": 'Negative Review Received',
+        "Message": 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']),
         event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
     }))
     

@@ -22,3 +22,12 @@ kubectl port-forward -n openfaas svc/gateway 8080:8080 &
 sleep 30s
 PASSWORD=$(kubectl get secret -n openfaas basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode; echo)
 echo -n $PASSWORD | faas-cli login --username admin --password-stdin
+arkade install mongodb
+export MONGODB_ROOT_PASSWORD=$(sudo k3s kubectl get secret --namespace default mongodb -o jsonpath="{.data.mongodb-root-password}" | base64 --decode)
+kubectl port-forward --namespace default svc/mongodb 27017:27017 &
+arkade install redis
+export REDIS_PASSWORD=$(sudo k3s kubectl get secret --namespace redis redis -o jsonpath="{.data.redis-password}" | base64 --decode)
+kubectl port-forward --namespace redis svc/redis-master 6379:6379 &
+faas-cli secret create mongo-db-password --from-literal $MONGODB_ROOT_PASSWORD
+faas-cli secret create redis-password --from-literal $REDIS_PASSWORD
+python3 set-redis.py $REDIS_PASSWORD

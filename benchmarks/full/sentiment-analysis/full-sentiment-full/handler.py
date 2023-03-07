@@ -6,6 +6,7 @@ import os
 import sys
 from pymongo import MongoClient
 from urllib.parse import quote_plus
+import redis
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
@@ -103,9 +104,8 @@ def sns_handler(req):
     #    event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])
     #)
     response = requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/shasum' , data = json.dumps({
-        TopicArn = AWS_SNS,
-        Subject = 'Negative Review Received',
-        Message = 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']),
+        "Subject": 'Negative Review Received',
+        "Message": 'Review (ID = %i) of %s (ID = %i) received with negative results from sentiment analysis. Feedback from Customer (ID = %i): "%s"' % (int(event['reviewID']),
         event['reviewType'], int(event['productID']), int(event['customerID']), event['feedback'])   
     }))
     
