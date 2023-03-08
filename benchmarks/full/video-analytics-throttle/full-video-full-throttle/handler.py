@@ -294,7 +294,7 @@ def shuffle_handler(req):
     fs = []
     for i in range(len(returnedDic["detail"]["indeces"])):
         fs.append(classify_handler(json.dumps(returnedDic["detail"]["indeces"][i])))
-    results = [f.result() for f in fs]
+    results = [f for f in fs]
     return json.dumps(results)
 
 def handle(req):
