@@ -7,6 +7,7 @@ import time
 import requests
 from urllib.parse import unquote_plus
 from concurrent.futures import ThreadPoolExecutor
+import sys
 import redis
 
 FFMPEG_STATIC = "function/var/ffmpeg"
@@ -16,6 +17,16 @@ re_length = re.compile(length_regexp)
 
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
+
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def shuffle_handler(req):
     event = json.loads(req)
@@ -92,13 +103,13 @@ def extract_handler(req):
         return {"Extract Got Dummy" : "Dummy call, doing nothing"}
 
     #print(subprocess.call([FFMPEG_STATIC]))
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=AWS_AccessKey,
-        aws_secret_access_key=AWS_SecretAccessKey
-    )
-    config = TransferConfig(use_threads=False)
-    bucket_name = AWS_S3_Partial
+    #s3_client = boto3.client(
+    #    's3',
+    #    aws_access_key_id=AWS_AccessKey,
+    #    aws_secret_access_key=AWS_SecretAccessKey
+    #)
+    #config = TransferConfig(use_threads=False)
+    #bucket_name = AWS_S3_Partial
     print(event)
     list_of_chunks = event['values']
     src_video = event['source_id']

@@ -17,12 +17,12 @@ redisClient = redis.Redis(
 def handle(req):
     event = req.split(",")
     data = redisClient.get("checksumed-" + event[0])
-    with open("/tmp/" + event[0], "w") as f:
+    with open("/tmp/" + event[0], "wb") as f:
         f.write(data)
     with ZipFile('/tmp/zip.zip', 'w') as zip:
         zip.write("/tmp/" + event[0])
     zip.close()
-    with open("/tmp/zip.zip", "w") as f:
+    with open("/tmp/zip.zip", "rb") as f:
         data = f.read()
     redisClient.set("ziped-" + event[0], data)
     return "success"

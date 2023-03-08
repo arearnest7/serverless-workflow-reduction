@@ -71,6 +71,7 @@ def wage_sum_handler(req):
 
 def stats_handler(req):
     #manifest = s3.list_objects(Bucket=AWS_S3_Full, Prefix="raw/")
+    manifest = []
 
     total = {'statistics': {'total': 0, 'staff-number': 0, 'teamleader-number': 0, 'manager-number': 0}}
     base = {'statistics': {'staff': 0, 'teamleader': 0, 'manager': 0}}
@@ -81,17 +82,18 @@ def stats_handler(req):
         #doc = {}
         #with open("/tmp/temp", "r") as f:
         #    doc = json.load(f)
-        doc = json.loads(redisClient.get(key))
+        doc = json.loads(redisClient.get(key.decode("utf-8")))
         total['statistics']['total'] += doc['total']
         total['statistics'][doc['role']+'-number'] += 1
         base['statistics'][doc['role']] += doc['base']
         merit['statistics'][doc['role']] += doc['merit']
+        manifest.append(key.decode("utf-8"))
 
     fs = []
-    with ThreadPoolExecutor(max_workers=len(manifest["Contents"])) as executor:
-        for obj in manifest["Contents"]:
-            if obj["Key"] != "raw/":
-                fs.append(executor.submit(wage_sum_handler, json.dumps({'total': total, 'base': base, 'merit': merit, 'operator': obj["Key"]})))
+    with ThreadPoolExecutor(max_workers=len(manifest)) as executor:
+        for obj in manifest:
+            if obj != "raw/":
+                fs.append(executor.submit(wage_sum_handler, json.dumps({'total': total, 'base': base, 'merit': merit, 'operator': obj})))
     results = [f for f in fs]
     return "processed batch at " + str(time.time())
 

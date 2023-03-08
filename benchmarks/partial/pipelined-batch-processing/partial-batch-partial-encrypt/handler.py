@@ -17,7 +17,7 @@ redisClient = redis.Redis(
 def handle(req):
     event = req.split(",")
     data = redisClient.get("ziped-" + event[0])
-    with open("/tmp/" + event[0] + ".zip", "w") as f:
+    with open("/tmp/" + event[0] + ".zip", "wb") as f:
         f.write(data)
     key = Fernet.generate_key()
     with open('/tmp/key.key', 'wb') as filekey:

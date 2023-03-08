@@ -1,11 +1,23 @@
 import requests
 import json
+import os
+import sys
 import redis
 
 TAX = 0.0387
 ROLES = ['staff', 'teamleader', 'manager']
 OF_Gateway_IP="gateway.openfaas"
 OF_Gateway_Port="8080"
+
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
 
 def write_merit_handler(req):
     params = json.loads(req)

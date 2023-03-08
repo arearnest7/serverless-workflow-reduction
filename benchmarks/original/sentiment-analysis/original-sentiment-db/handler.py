@@ -50,7 +50,7 @@ def handle(req):
         'feedback': event['feedback'],
         'sentiment': event['sentiment']
     }
-    response = {"response": table.insert_one(Item).inserted_id}
+    response = {"response": str(table.insert_one(Item).inserted_id)}
 
     #pass through values 
     response['reviewType'] = event['reviewType']

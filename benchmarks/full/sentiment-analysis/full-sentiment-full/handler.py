@@ -68,7 +68,7 @@ def db_handler(req):
         'feedback': event['feedback'],
         'sentiment': event['sentiment']
     }
-    response = {"response": table.insert_one(Item).inserted_id}
+    response = {"response": str(table.insert_one(Item).inserted_id)}
     
     #pass through values 
     response['reviewType'] = event['reviewType']
@@ -78,7 +78,7 @@ def db_handler(req):
     response['feedback'] = event['feedback']
     response['sentiment'] = event['sentiment']
         
-    return response
+    return json.dumps(response)
 
 
 def sfail_handler(req):
@@ -171,7 +171,7 @@ def product_sentiment_handler(req):
     #use comprehend to perform sentiment analysis
     feedback = event['feedback']
     #sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
-    response = json.loads(requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/sentimentanalysis' , data = feedback))
+    response = json.loads(requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/sentimentanalysis' , data = feedback).text)
     if response['polarity'] > 0.5:
         sentiment = "POSITIVE"
     elif response['polarity'] < -0.5:
@@ -196,13 +196,14 @@ def service_sentiment_handler(req):
     '''
     #use comprehend to perform sentiment analysis
     feedback = event['feedback']
-    uploaded = False
-    while not uploaded:
-        try:
-            sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
-            uploaded = True
-        except:
-            print("waiting for ability to upload")
+    #sentiment=client.detect_sentiment(Text=feedback,LanguageCode='en')['Sentiment']
+    response = json.loads(requests.get(url = 'http://' + OF_Gateway_IP + ':' + OF_Gateway_Port + '/function/sentimentanalysis' , data = feedback).text)
+    if response['polarity'] > 0.5:
+        sentiment = "POSITIVE"
+    elif response['polarity'] < -0.5:
+        sentiment = "NEGATIVE"
+    else:
+        sentiment = "NEUTRAL"
     
     #pass through values
     return service_result_handler({

@@ -11,6 +11,16 @@ import redis
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+with open('/var/openfaas/secrets/redis-password', 'r') as s:
+    redisPassword = s.read()
+redisHostname = os.getenv('redis_hostname')
+redisPort = os.getenv('redis_port')
+redisClient = redis.Redis(
+                host=redisHostname,
+                port=redisPort,
+                password=redisPassword,
+            )
+
 def delete_tmp():
     for root, dirs, files in os.walk("./tmp/", topdown=False):
         for name in files:

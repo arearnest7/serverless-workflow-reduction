@@ -386,7 +386,7 @@ def handle(req):
     with ThreadPoolExecutor(max_workers=len(listOfDics)) as executor:
         for i in range(len(listOfDics)):
             fs.append(executor.submit(extract_handler, json.dumps(listOfDics[i])))
-    results = [json.loads(f) for f in fs]
+    results = [json.loads(f.result()) for f in fs]
     payload = {}
     for i in range(len(results)):
         payload[str(i)] = results[i]

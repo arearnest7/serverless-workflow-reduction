@@ -30,12 +30,12 @@ def checksum_handler(req):
 def zip_handler(req):
     event = req.split(",")
     data = redisClient.get("checksumed-" + event[0])
-    with open("/tmp/" + event[0], "w") as f:
+    with open("/tmp/" + event[0], "wb") as f:
         f.write(data)
     with ZipFile('/tmp/zip.zip', 'w') as zip:
         zip.write("/tmp/" + event[0])
     zip.close()
-    with open("/tmp/zip.zip", "w") as f:
+    with open("/tmp/zip.zip", "rb") as f:
         data = f.read()
     redisClient.set("ziped-" + event[0], data)
     return "success"
@@ -43,7 +43,7 @@ def zip_handler(req):
 def encrypt_handler(req):
     event = req.split(",")
     data = redisClient.get("ziped-" + event[0])
-    with open("/tmp/" + event[0] + ".zip", "w") as f:
+    with open("/tmp/" + event[0] + ".zip", "wb") as f:
         f.write(data)
     key = Fernet.generate_key()
     with open('/tmp/key.key', 'wb') as filekey:
